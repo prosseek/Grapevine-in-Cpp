@@ -1,13 +1,24 @@
+// #include <limits.h>
+// #include <time.h>
+// #include <gtest/gtest.h>
+// #include <list>
+// #include <map>
+// #include <string>
+// #include "grapevine.h"
+// #include "groupUtils.h"
+// #include "util.h"
+
 #include <limits.h>
 #include <time.h>
 #include <gtest/gtest.h>
 #include <list>
 #include <map>
 #include <string>
-#include "grapevine.h"
-#include "groupUtils.h"
 
-#if 0
+#include "util.h"
+
+using namespace std;
+
 class QuickTest : public testing::Test {
  protected:
   virtual void SetUp() {
@@ -36,6 +47,9 @@ class GroupUtilsTest : public QuickTest {
 };
 
 TEST_F(GroupUtilsTest, getDeclaredMemberships) {
+    // vector<string> keys;
+    // Util::print(keys);
+    
     /*
      * getDeclaredMemberships(summary)
      * Given summary, returns all the "GROUP_DECLARATIONS_ENUMERATED" in a vector
@@ -48,4 +62,3 @@ TEST_F(GroupUtilsTest, getDeclaredMemberships) {
     // //Util::addAll(aList, bList);
     // EXPECT_EQ(6, aList.size());
 }
-#endif

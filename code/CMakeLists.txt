@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.8)
 project( grapevine )
 
 # cmake -DCMAKE_BUILD_TYPE:STRING=Debug ../code
+# ./gv --gtest_filter=Context*
+
 # http://www.cmake.org/Wiki/CMake_Useful_Variables#Compilers_and_Tools
 set(CMAKE_CXX_FLAGS_DEBUG, ON)
 set(CMAKE_CXX_COMPILER "/opt/local/bin/g++-mp-4.8")
@@ -14,6 +16,7 @@ include_directories(/usr/local/include)
 include_directories(.)
 include_directories(./src)
 include_directories(./src/util)
+include_directories(./test)
 link_directories(/usr/local/lib)
 
 set(grapevine_srcs 

@@ -80,6 +80,16 @@ public:
      */
     static void deepcopy(const std::map<std::string, int> source, std::map<std::string, int>& dest);
     
+    /**
+     * getKeys from map
+     */
+    
+    template<class T>
+    static std::vector<T> getKeys(std::map<T, int>& map);
+    
+    template<class T>
+    static bool sameTwoVectors(std::vector<T> first, std::vector<T> second);
+    
     template <class T>
     static void print(std::vector<T>* vectorArray);
     

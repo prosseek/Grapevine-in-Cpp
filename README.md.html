@@ -3,4 +3,6 @@
 <p>cd build cmake -DCMAKE_BUILD_TYPE:STRING=Debug ../code</p>
 <h2 id="selectively-executing-unit-test">Selectively executing unit test</h2>
 <pre><code>./gv --gtest_filter=UtilTest.*</code></pre>
+<p>Or make and run only the Context* tests</p>
+<pre><code>make &amp;&amp; ./gv --gtest_filter=Context*</code></pre>
 <p>refer to <a href="http://stackoverflow.com/questions/17093772/selectively-executing-unit-tests-with-googletest/17093852#17093852">stackoverflow</a></p>

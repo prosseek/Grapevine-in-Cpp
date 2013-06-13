@@ -4,7 +4,8 @@
 #include <list>
 #include <map>
 #include <string>
-#include "Util.h"
+
+#include "util.h"
 
 class QuickTest : public testing::Test {
  protected:
@@ -32,7 +33,6 @@ class UtilTest : public QuickTest {
   std::vector<int> bList;
   std::map<std::string, int> aMap;
 };
-
 
 TEST_F(UtilTest, addAll) {
     std::vector<int> aList = {10, 20, 30, 40}; 
@@ -117,4 +117,45 @@ TEST_F(UtilTest, deepcopy) {
     EXPECT_TRUE(dest["abc"] == 10);
     EXPECT_TRUE(dest["def"] == 20);
     EXPECT_TRUE(dest["xyz"] == 30);
+}
+
+TEST_F(UtilTest, getKeys) {
+    std::map<std::string, int> source;
+    source["abc"] = 10; source["def"] = 20; source["xyz"] = 30;
+    std::vector<std::string> keys {"abc", "def", "xyz"};
+    
+    std::vector<std::string> v = Util::getKeys(source);
+    EXPECT_TRUE(Util::sameTwoVectors(v, keys));
+}
+
+TEST_F(UtilTest, sameTwoVectorsIntTrue) {
+    std::vector<int> first {1,2,3};
+    std::vector<int> second {1,2,3};
+    
+    EXPECT_TRUE(Util::sameTwoVectors(first, second));
+    // EXPECT_EQ(6, aList.size());
+}
+
+TEST_F(UtilTest, sameTwoVectorsIntFalse) {
+    std::vector<int> first {1,2,3};
+    std::vector<int> second {1,2,5};
+    
+    EXPECT_FALSE(Util::sameTwoVectors(first, second));
+    // EXPECT_EQ(6, aList.size());
+}
+
+TEST_F(UtilTest, sameTwoVectorStringTrue) {
+    std::vector<std::string> first {"a","b","c"};
+    std::vector<std::string> second {"a","b","c"};
+    
+    EXPECT_TRUE(Util::sameTwoVectors(first, second));
+    // EXPECT_EQ(6, aList.size());
+}
+
+TEST_F(UtilTest, sameTwoVectorsStringFalse) {
+    std::vector<std::string> first {"a","b","c"};
+    std::vector<std::string> second {"a","b","d"};
+    
+    EXPECT_FALSE(Util::sameTwoVectors(first, second));
+    // EXPECT_EQ(6, aList.size());
 }

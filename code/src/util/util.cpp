@@ -5,7 +5,7 @@
 // To change the template use AppCode | Preferences | File Templates.
 //
 
-#include "Util.h"
+#include "util.h"
 
 //namespace bloomier {
 
@@ -168,4 +168,27 @@ template void Util::print(int* vectorArray, int);
 //template void Util::print(std::string* vectorArray, int);
 template void Util::print(unsigned char* vectorArray, int);
 
+template <class T>
+std::vector<T> Util::getKeys(std::map<T, int>& map)
+{
+    std::vector<std::string> result;
+
+    for(auto key: map)
+        result.push_back(key.first);
+    return result;
+}
+template std::vector<std::string> Util::getKeys(std::map<std::string, int>& map);
+
+
+template<class T>
+bool Util::sameTwoVectors(std::vector<T> first, std::vector<T> second)
+{
+    sort (first.begin(), first.begin() + first.size());
+    sort (second.begin(), second.begin() + second.size());
+    return (first == second);
+    //return true;
+}
+//template void Util::addAll<std::string>(std::vector<std::string>&, const std::vector<std::string>);
+template bool Util::sameTwoVectors(std::vector<int> first, std::vector<int> second);
+template bool Util::sameTwoVectors(std::vector<std::string> first, std::vector<std::string> second);
 //} // namespace
