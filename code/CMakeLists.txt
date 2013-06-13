@@ -13,16 +13,22 @@ set(CMAKE_CXX_FLAGS "-std=c++11 -m64")
 include_directories(/usr/local/include)
 include_directories(.)
 include_directories(./src)
+include_directories(./src/util)
 link_directories(/usr/local/lib)
 
 set(grapevine_srcs 
     main.cpp 
     
     # bloomier filter code
-    src/util.cpp
+    src/contextSummary.cpp
+    src/util/util.cpp
+    src/util/groupUtils.cpp
+    src/util/
     
     # test code
-    test/testutil.cc
+    test/test_contextSummary.cc
+    test/test_util.cc
+    test/test_groupUtils.cc
     )
     
 add_executable(gv ${grapevine_srcs})
