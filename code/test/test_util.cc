@@ -159,3 +159,15 @@ TEST_F(UtilTest, sameTwoVectorsStringFalse) {
     EXPECT_FALSE(Util::sameTwoVectors(first, second));
     // EXPECT_EQ(6, aList.size());
 }
+
+TEST_F(UtilTest, to_stringMapString) {
+    std::map<std::string, int> m {{"abc",10}, {"def",20}, {"xyz",100}};
+    //std::cout << Util::to_string(m);
+    EXPECT_EQ("{abc:10,def:20,xyz:100}", Util::to_string(m));
+}
+
+TEST_F(UtilTest, to_stringMapStringNull) {
+    std::map<std::string, int> m;
+    //std::cout << Util::to_string(m);
+    EXPECT_EQ("{}", Util::to_string(m));
+}

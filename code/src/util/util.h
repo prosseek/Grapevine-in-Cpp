@@ -90,6 +90,9 @@ public:
     template<class T>
     static bool sameTwoVectors(std::vector<T> first, std::vector<T> second);
     
+    template<class T>
+    static std::string to_string(std::map<T, int>& m);
+    
     template <class T>
     static void print(std::vector<T>* vectorArray);
     

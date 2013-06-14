@@ -14,4 +14,7 @@ Or make and run only the Context* tests
 
 refer to [stackoverflow]
 
+## Think
+1. We don't copy the map into the ContextSummary now, but it's dangerous not to get all the information in one Summary. 
+
 [stackoverflow]: http://stackoverflow.com/questions/17093772/selectively-executing-unit-tests-with-googletest/17093852#17093852
