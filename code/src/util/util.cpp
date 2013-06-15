@@ -152,11 +152,19 @@ template bool Util::sameTwoVectors(std::vector<std::string> first, std::vector<s
 template<class T>
 std::string Util::to_string(std::map<T, int>& m)
 {
+    return to_string(&m);
+}
+template std::string Util::to_string(std::map<std::string, int>& m);
+template std::string Util::to_string(std::map<int, int>& m);
+
+template<class T>
+std::string Util::to_string(std::map<T, int>* p)
+{
     std::string res;
-    if (m.empty()) return "{}";
+    if (p->empty()) return "{}";
     
     res += "{";
-    for (auto item: m)
+    for (auto item: *p)
     {
         res += item.first;
         res += ":";
@@ -167,14 +175,13 @@ std::string Util::to_string(std::map<T, int>& m)
     res += "}";
     return res;
 }
-template std::string Util::to_string(std::map<std::string, int>& m);
-template std::string Util::to_string(std::map<int, int>& m);
+template std::string Util::to_string(std::map<std::string, int>*);
 
 /*
  * DEBUGGING FUNCTIONS : print
  */
 template <class T>
-void Util::print(std::vector<T>* vectorArray)
+void Util::print(const std::vector<T>* vectorArray)
 {
     for (auto i = vectorArray->begin(); i != vectorArray->end(); ++i)
     {
@@ -182,20 +189,41 @@ void Util::print(std::vector<T>* vectorArray)
     }
     std::cout << std::endl;
 }
-template void Util::print(std::vector<int>* vectorArray);
-template void Util::print(std::vector<std::string>* vectorArray);
-  
-template <class T>
-void Util::print(std::vector<T> vectorArray)
+
+template <>
+void Util::print(const std::vector<unsigned char>& vectorArray)
 {
-    for (auto i = vectorArray.begin(); i != vectorArray.end(); ++i)
-    {
-        std::cout << *i << ":";
-    }
-    std::cout << std::endl;
+    return Util::printByteStream(vectorArray);
 }
-template void Util::print(std::vector<int> vectorArray);
-template void Util::print(std::vector<std::string> vectorArray);
+
+void Util::printByteStream(const std::vector<unsigned char>& input)
+{
+    for (auto val : input) printf("\\x%.2x", val);
+    printf("\n");
+}
+
+template <class T>
+void Util::print(const std::vector<T>& vectorArray)
+{
+    return Util::print(&vectorArray);
+}
+
+template void Util::print(const std::vector<int>* vectorArray);
+template void Util::print(const std::vector<std::string>* vectorArray);
+template void Util::print(const std::vector<int>& vectorArray);
+template void Util::print(const std::vector<std::string>& vectorArray);
+
+// template <class T>
+// void Util::print(std::vector<T> vectorArray)
+// {
+//     for (auto i = vectorArray.begin(); i != vectorArray.end(); ++i)
+//     {
+//         std::cout << *i << ":";
+//     }
+//     std::cout << std::endl;
+// }
+// template void Util::print(std::vector<int> vectorArray);
+// template void Util::print(std::vector<std::string> vectorArray);
 
 template <class T>
 void Util::print(T* array, int size)
@@ -242,5 +270,29 @@ void Util::andOperation(const std::vector<T>& vectorArray1, const std::vector<T>
     }
 }
 template void Util::andOperation(const std::vector<int>& vectorArray1, const std::vector<int>& vectorArray2, std::vector<int>& result);
+
+std::string Util::byteToHexString(unsigned char value)
+{
+    std::ostringstream oss;
+    
+    oss << std::hex << std::setw(2) << std::setfill('0') << int(value);
+    return "0x" + oss.str();
+}
+
+void Util::byteArrayToString(const std::vector<unsigned char>& byteArray, std::string& result)
+{
+    for (auto elem : byteArray)
+    {
+        result += elem;
+    }
+}
+
+void Util::stringToByteArray(const std::string str, std::vector<unsigned char>& result)
+{
+    for (auto elem : str)
+    {
+        result.push_back(elem);
+    }
+}
 
 //} // namespace

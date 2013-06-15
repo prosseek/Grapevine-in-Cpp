@@ -35,6 +35,7 @@ set(grapevine_srcs
     
     src/util/util.cpp
     src/util/groupUtils.cpp
+    src/util/serializerUtils.cpp
     
     # test code
     test/test_groupContextSummary.cc
@@ -50,6 +51,7 @@ set(grapevine_srcs
     test/test_util.cc
     test/test_groupUtils.cc
     test/test_error.cc
+    test/test_serializerUtils.cc
     )
     
 add_executable(gv ${grapevine_srcs})

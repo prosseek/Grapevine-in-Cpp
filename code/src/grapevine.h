@@ -11,4 +11,5 @@ const std::string MEMBER_PREFIX = "Member";
 const std::string ID_AGGREGATION_PREFIX = "Id";
 const std::string IDS_AGGREGATED = "IdsAggregated";
 
+const int DEFAULT_TAU = 3;
 #endif

@@ -201,3 +201,33 @@ TEST_F(UtilTest, andOperation) {
     // EXPECT_TRUE(Util::endswith(m, sub));
     // EXPECT_FALSE(Util::endswith(m, sub2));
 }
+
+TEST_F(UtilTest, byteToHexString) {
+    std::string res = Util::byteToHexString(0xaa);
+    EXPECT_EQ(res,"0xaa");
+    
+    res = Util::byteToHexString(1);
+    EXPECT_EQ(res,"0x01");
+    
+    res = Util::byteToHexString(0);
+    EXPECT_EQ(res,"0x00");
+    
+    res = Util::byteToHexString(255);
+    EXPECT_EQ(res,"0xff");
+}
+
+TEST_F(UtilTest, byteArrayToString) {
+    std::vector<unsigned char> input {104, 101, 108, 108, 111}; 
+    std::string result;
+    std::string expected = "hello";
+    Util::byteArrayToString(input, result);
+    EXPECT_EQ(result, expected);
+}
+
+TEST_F(UtilTest, stringToByteArray) {
+    std::string input = "hello"; 
+    std::vector<unsigned char> result;
+    std::vector<unsigned char> expected = {104, 101, 108, 108, 111};
+    Util::stringToByteArray(input, result);
+    EXPECT_EQ(result, expected);
+}

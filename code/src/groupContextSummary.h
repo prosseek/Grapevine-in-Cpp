@@ -19,7 +19,7 @@ public:
         ContextSummary(other) {}
         
     std::string to_string() const
-    {
+    {   
         return "G" + ContextSummary::to_string();
     }
     

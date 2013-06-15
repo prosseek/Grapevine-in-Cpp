@@ -17,6 +17,8 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <iomanip>
+#include <sstream>
 
 //namespace bloomier {
     
@@ -93,20 +95,30 @@ public:
     template<class T>
     static std::string to_string(std::map<T, int>& m);
     
-    template <class T>
-    static void print(std::vector<T>* vectorArray);
+    template<class T>
+    static std::string to_string(std::map<T, int>* p);
     
     template <class T>
-    static void print(std::vector<T> vectorArray);
+    static void print(const std::vector<T>* vectorArray);
+    //static void print(const std::vector<unsigned char>* vectorArray);
+        
+    template <class T>
+    static void print(const std::vector<T>& vectorArray);
     
     template <class T>
     static void print(T* array, int size);
+    
+    static void printByteStream(const std::vector<unsigned char>& input);
     
     static bool startswith(std::string mainstring, std::string substring);
     static bool endswith(std::string mainstring, std::string substring);
     
     template<typename T>
     static void andOperation(const std::vector<T>& vectorArray1, const std::vector<T>& vectorArray2, std::vector<T>& result);
+    static std::string byteToHexString(unsigned char value);
+    
+    static void byteArrayToString(const std::vector<unsigned char>& byteArray, std::string& result);
+    static void stringToByteArray(const std::string str, std::vector<unsigned char>& result);    
 };
 //}
 

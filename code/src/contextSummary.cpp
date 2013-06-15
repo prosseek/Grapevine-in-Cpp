@@ -34,7 +34,8 @@ std::vector<std::string> ContextSummary::keySet()
 std::string ContextSummary::to_string() const
 {
     //return "(%d)[%d]:%s - (%s)" % (self.uid, self.hops, str(self.db), self.timestamp)
-    std::string dbString = Util::to_string(*(this->db));
+    //std::string dbString = Util::to_string(*(this->db));
+    std::string dbString = Util::to_string(db);
     
     std::ostringstream out;  
     out << "(" << this->id << ")" << "[" << this->hops << "]:" << dbString << "-(" << this->timestamp << ")"; 
