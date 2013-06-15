@@ -24,14 +24,16 @@ set(grapevine_srcs
     
     # bloomier filter code
     src/contextSummary.cpp
+    src/groupContextSummary.cpp
     src/util/util.cpp
     src/util/groupUtils.cpp
-    src/util/
     
     # test code
+    test/test_groupContextSummary.cc
     test/test_contextSummary.cc
     test/test_util.cc
     test/test_groupUtils.cc
+    test/test_error.cc
     )
     
 add_executable(gv ${grapevine_srcs})

@@ -101,6 +101,12 @@ public:
     
     template <class T>
     static void print(T* array, int size);
+    
+    static bool startswith(std::string mainstring, std::string substring);
+    static bool endswith(std::string mainstring, std::string substring);
+    
+    template<typename T>
+    static void andOperation(const std::vector<T>& vectorArray1, const std::vector<T>& vectorArray2, std::vector<T>& result);
 };
 //}
 

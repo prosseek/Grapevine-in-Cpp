@@ -211,4 +211,36 @@ template void Util::print(int* vectorArray, int);
 //template void Util::print(std::string* vectorArray, int);
 template void Util::print(unsigned char* vectorArray, int);
 
+bool Util::startswith(std::string mainstring, std::string substring)
+{
+    int mainlength = mainstring.size();
+    int length = substring.size();
+    if (length > mainlength) return false;
+    
+    std::string sub = mainstring.substr(0, length);
+    return (sub == substring);
+}
+bool Util::endswith(std::string mainstring, std::string substring)
+{
+    int mainlength = mainstring.size();
+    int length = substring.size();
+    if (length > mainlength) return false;
+    
+    std::string sub = mainstring.substr(mainlength - length, mainlength);
+    return (sub == substring);
+}
+
+template<typename T>
+void Util::andOperation(const std::vector<T>& vectorArray1, const std::vector<T>& vectorArray2, std::vector<T>& result)
+{
+    for (auto element : vectorArray1)
+    {
+        if (Util::in(vectorArray2, element))
+        {
+            result.push_back(element);
+        }
+    }
+}
+template void Util::andOperation(const std::vector<int>& vectorArray1, const std::vector<int>& vectorArray2, std::vector<int>& result);
+
 //} // namespace

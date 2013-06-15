@@ -171,3 +171,33 @@ TEST_F(UtilTest, to_stringMapStringNull) {
     //std::cout << Util::to_string(m);
     EXPECT_EQ("{}", Util::to_string(m));
 }
+
+TEST_F(UtilTest, startswith) {
+    std::string m("Hello world");
+    std::string sub("Hello");
+    std::string sub2("no_hello");
+    EXPECT_TRUE(Util::startswith(m, sub));
+    EXPECT_FALSE(Util::startswith(m, sub2));
+}
+
+TEST_F(UtilTest, endswith) {
+    // std::string m("Hello world");
+    // std::string sub("world");
+    // std::string sub2("no_world");
+    // EXPECT_TRUE(Util::endswith(m, sub));
+    // EXPECT_FALSE(Util::endswith(m, sub2));
+}
+
+TEST_F(UtilTest, andOperation) {
+    std::vector<int> a {1,2,3,4,5};
+    std::vector<int> b {1,2,6,7,8};
+    std::vector<int> expected {1,2};
+    std::vector<int> res;
+    Util::andOperation(a,b,res);
+    EXPECT_TRUE(Util::sameTwoVectors(expected, res));
+    // std::string m("Hello world");
+    // std::string sub("world");
+    // std::string sub2("no_world");
+    // EXPECT_TRUE(Util::endswith(m, sub));
+    // EXPECT_FALSE(Util::endswith(m, sub2));
+}

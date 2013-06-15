@@ -30,13 +30,13 @@ public:
      */
     std::vector<std::string> keySet();
     
-    std::time_t getTimestamp() {return this->timestamp;}
+    std::time_t getTimestamp() const {return this->timestamp;}
     void setTimestamp(std::time_t timestamp) {this->timestamp = timestamp;}
     
     int getHops() {return this->hops;}
     int setHops(int hops) {this->hops = hops; return hops;}
     
-    int getId() {return this->id;}
+    int getId() const {return this->id;}
     void setId() {this->id = id;}
     
     /**
@@ -48,14 +48,14 @@ public:
     /**
      * get(key) returns the value from the db
      */
-    bool get(std::string key, int& result);
+    bool get(std::string key, int& result) const;
     
     /**
      * put(key, val) sets the db[key] into val
      */
     void put(std::string key, int value);
     
-    bool containsKey(std::string key);
+    bool containsKey(std::string key) const;
     void remove(std::string key);
     ContextSummary* getWireCopy();
     ContextSummary* getCopy();

@@ -31,6 +31,7 @@ class ContextSummaryTest : public QuickTest {
   
   virtual void TearDown() {
       delete c;
+      delete c2;
   }
   std::map<std::string, int> m;
   ContextSummary* c;
@@ -52,7 +53,7 @@ TEST_F(ContextSummaryTest, keySet) {
 
 TEST_F(ContextSummaryTest, toString) {
     //std::cout << c->to_string();
-    EXPECT_EQ("(1)[3]:{abc:10,def:20,xyz:100} - (0)", c->to_string()); // Util::to_string(this->m));
+    EXPECT_EQ("(1)[3]:{abc:10,def:20,xyz:100}-(0)", c->to_string()); // Util::to_string(this->m));
 }
 
 TEST_F(ContextSummaryTest, eq) {

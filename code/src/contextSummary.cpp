@@ -37,7 +37,7 @@ std::string ContextSummary::to_string() const
     std::string dbString = Util::to_string(*(this->db));
     
     std::ostringstream out;  
-    out << "(" << this->id << ")" << "[" << this->hops << "]:" << dbString << " - (" << this->timestamp << ")"; 
+    out << "(" << this->id << ")" << "[" << this->hops << "]:" << dbString << "-(" << this->timestamp << ")"; 
     
     return out.str();
 }
@@ -54,7 +54,7 @@ bool ContextSummary::operator==(const ContextSummary& other)
     return sameExceptHops(other) && this->hops == other.hops;
 }
 
-bool ContextSummary::get(std::string key, int& result)
+bool ContextSummary::get(std::string key, int& result) const
 {
     bool contained = containsKey(key);
     if (contained == true) {
@@ -70,7 +70,7 @@ void ContextSummary::put(std::string key, int value)
     (*db)[key] = value;
 }
 
-bool ContextSummary::containsKey(std::string key)
+bool ContextSummary::containsKey(std::string key) const
 {
     std::map<std::string,int>::iterator it = db->find(key);
     if (it == db->end()) return false;
