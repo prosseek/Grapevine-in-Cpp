@@ -100,7 +100,7 @@ void GroupUtils::getGroupMembers(const ContextSummary& groupSummary, std::vector
     return getListFromSummary(groupSummary, MEMBERS_ENUMERATED, MEMBER_PREFIX, members);
 }
 
-void GroupUtils::setGroupMembers(ContextSummary& groupSummary, std::vector<int>& memberIds)
+void GroupUtils::setGroupMembers(ContextSummary& groupSummary, const std::vector<int>& memberIds)
 {
     int previousNumberOfMembers;
     groupSummary.get(MEMBERS_ENUMERATED, previousNumberOfMembers);

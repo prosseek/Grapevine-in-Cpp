@@ -23,17 +23,12 @@ public:
         return "G" + ContextSummary::to_string();
     }
     
-    bool getMemberIds(std::vector<int>& result)
-    {
-        //return getGroupMembers(result);
-        //???
-    }
-    
-    void getGroupMembers(std::vector<int>& result) 
+    void getMemberIds(std::vector<int>& result)
     {
         return GroupUtils::getGroupMembers(*this, result);
     }
-    void setGroupMembers(std::vector<int> ids)
+    
+    void setGroupMembers(const std::vector<int>& ids)
     {
         return GroupUtils::setGroupMembers(*this, ids);
     }
@@ -41,7 +36,7 @@ public:
     {
         return GroupUtils::addGroupMember(*this, id);
     }
-    void addMemberIds(std::vector<int> ids);
+    void addMemberIds(const std::vector<int>& ids);
             
     GroupContextSummary* getGroupCopy()
     {

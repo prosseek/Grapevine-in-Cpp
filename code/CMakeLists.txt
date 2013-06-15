@@ -25,12 +25,28 @@ set(grapevine_srcs
     # bloomier filter code
     src/contextSummary.cpp
     src/groupContextSummary.cpp
+    src/groupDefinition.cpp
+    src/serializer.cpp
+    src/contextHandler.cpp
+    src/contextShim.cpp
+    src/contextSummarySerializer.cpp
+    src/datagramContextShim.cpp
+    src/contextShimmedDatagramSocket.cpp
+    
     src/util/util.cpp
     src/util/groupUtils.cpp
     
     # test code
     test/test_groupContextSummary.cc
     test/test_contextSummary.cc
+    
+    test/test_serializer.cc
+    test/test_contextHandler.cc
+    test/test_contextShim.cc
+    test/test_contextSummarySerializer.cc
+    test/test_datagramContextShim.cc
+    test/test_contextShimmedDatagramSocket.cc
+    
     test/test_util.cc
     test/test_groupUtils.cc
     test/test_error.cc

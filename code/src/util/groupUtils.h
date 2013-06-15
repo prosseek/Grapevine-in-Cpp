@@ -47,7 +47,7 @@ public:
     
     static void addGroupMember(ContextSummary& summary, int id);
     static void getGroupMembers(const ContextSummary& summary, std::vector<int>& result);
-    static void setGroupMembers(ContextSummary& summary, std::vector<int>& ids);
+    static void setGroupMembers(ContextSummary& summary, const std::vector<int>& ids);
     
     static bool isAggregated(const ContextSummary& summary, int idToCheck);
     static bool haveNoCommonAggregation(const ContextSummary& summary1, const ContextSummary& summary2);

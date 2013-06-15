@@ -3,7 +3,8 @@
 #include "groupContextSummary.h"
 #include "util.h"
 
-void GroupContextSummary::addMemberIds(std::vector<int> ids)
+void GroupContextSummary::addMemberIds(const std::vector<int>& ids)
 {
-    
+    for (auto uid : ids)
+        addMemberId(uid);
 }
