@@ -4,6 +4,7 @@
 //
 // To change the template use AppCode | Preferences | File Templates.
 //
+#include <algorithm>
 #include "util.h"
 
 //namespace bloomier {
@@ -47,6 +48,30 @@ void Util::removeAll(std::map<T1, T2>& aMap, const std::vector<T3> bList)
     }
 }
 template void Util::removeAll(std::map<std::string, int>& , const std::vector<std::string>);
+
+
+template <class T>
+void Util::removeAll(std::vector<T>& v1, const std::vector<T>& v2)
+{
+    std::list<T> containedValue;
+    for (auto value : v1)
+    {
+        if (in(v2, value))
+        {
+            containedValue.push_back(value);
+        }
+    }
+    
+//  std::vector<int>::iterator
+    for (auto value : containedValue)
+    {
+        typename std::vector<T>::iterator ip = find(v1.begin(), v1.end(), value);
+        v1.erase(ip);
+    }
+    
+}
+
+template void Util::removeAll(std::vector<int>&, const std::vector<int>&);
 
 /**
  * byteArrayXor does xor operation on byte (unsigned char) basis up up size.

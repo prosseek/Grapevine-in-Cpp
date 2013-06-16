@@ -23,7 +23,7 @@ public:
         return "G" + ContextSummary::to_string();
     }
     
-    void getMemberIds(std::vector<int>& result)
+    void getMemberIds(std::vector<int>& result) const
     {
         return GroupUtils::getGroupMembers(*this, result);
     }

@@ -43,7 +43,7 @@ class GroupContextSummaryTest : public QuickTest {
 
 TEST_F(GroupContextSummaryTest, to_string) {
     string expected = "G(101)[3]:{Member0:1,Member1:2,Member2:3,MembersEnumerated:3}-(0)";
-    std::cout << g->to_string();
+    //std::cout << g->to_string();
     EXPECT_EQ(g->to_string(), expected);
 }
 

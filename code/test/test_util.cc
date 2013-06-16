@@ -53,6 +53,14 @@ TEST_F(UtilTest, removeAll) {
     EXPECT_EQ(40, aMap["xyz"]);
 }
 
+TEST_F(UtilTest, removeAllVectors) {
+    std::vector<int> a = {10,20,30};
+    std::vector<int> b = {20,30,40};
+    std::vector<int> c = {10};
+    Util::removeAll(a, b);
+    EXPECT_TRUE(Util::sameTwoVectors(a, c));
+}
+
 TEST_F(UtilTest, byteArrayXor1) {
     unsigned char a[] = {0x00, 0xFF, 0xFF};
     unsigned char b[] = {0xFF, 0xFF, 0x00, 0xFF};

@@ -42,6 +42,7 @@ set(grapevine_srcs
     test/test_contextSummary.cc
     
     test/test_serializer.cc
+    test/test_groupDefinition.cc
     test/test_contextHandler.cc
     test/test_contextShim.cc
     test/test_contextSummarySerializer.cc

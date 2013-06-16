@@ -49,6 +49,9 @@ public:
     template <class T1, class T2, class T3>
     static void removeAll(std::map<T1, T2>&, const std::vector<T3>);
     
+    template <class T>
+    static void removeAll(std::vector<T>&, const std::vector<T>&);
+    
     /**
      * For all the elements in the arrays:
      * result = result ^ input
