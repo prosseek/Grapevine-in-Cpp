@@ -1,40 +1,57 @@
+#include <cstddef>
+#include <map>
+#include <vector>
+
+#include "groupDefinition.h"
+#include "contextSummary.h"
 #include "grapevine.h"
 
 class ContextHandler {
     // """
     // It's a singleton, so it should be invoked with ConstextHandler.getInstance()
     // """
-    ContextHandler* singleton = nullptr;
+    int tau = 3;
+    static ContextHandler* singleton; // = nullptr;
+    map<int, GroupDefinition> groupDefinitions;
+    map<int, ContextSummary> receivedSummaries;
+    ContextSummary myContext;
 public:
     ContextHandler()
     {
         
     }
+    
+    static ContextHandler* getInstance()
+    {
+        if (ContextHandler::singleton == nullptr)
+        {
+            ContextHandler::singleton = new ContextHandler();
+        }
+        return ContextHandler::singleton;
+    }
+    
+    static void resetContextHandler()
+    {
+        if (ContextHandler::singleton != nullptr)
+        {
+            delete ContextHandler::singleton;
+        }
+        ContextHandler::singleton = nullptr;
+    }
+    
+    void removeLocalSummary()
+    {
+
+    }
+    void setTau(int tau) {this->tau = tau;}
+    int getTau() {return this->tau;}
+    
+    void setMyContext(const ContextSummary& summary)
+    {
+        this->myContext = summary;
+    }
+    
 }; 
-//     def __init__(self, tau = None):
-//         self.myContext = None
-//         self.groupDefinitions = {} # id -> GroupDefinition
-//         # different from Evan's: make it plural
-//         self.groupContexts = {} # id -> GroupContextSummary
-//         self.receivedSummaries = {}
-//         self.tau = DEFAULT_TAU if tau is None else tau
-//         
-//     @staticmethod
-//     def resetContextHandler():
-//         ContextHandler.singleton = None
-//         
-//     @staticmethod
-//     def getInstance():
-//         if ContextHandler.singleton is None:
-//             ContextHandler.singleton = ContextHandler()
-//         return ContextHandler.singleton
-//         
-//     def setTau(self, newTau):
-//         self.tau = newTau
-//     
-//     def getTau(self):
-//         return self.tau
-//         
 //     def setMyContext(self, summary):
 //         #print type(summary)
 //         assert (type(summary) is ContextSummary or summary is None)

@@ -21,5 +21,8 @@ C++ doesn't have a good way to point out where the error occurs. Throw Error() o
 
 ## Think
 1. We don't copy the map into the ContextSummary now, but it's dangerous not to get all the information in one Summary. 
+2. Some things are not clear.
+    2.1 Do we make the map into the ContextHandler as reference so that the whole DB is copied when initialized? Or, do we just keep it as it is using pointer?
+3. The time stamp is 1 second resolution in C++, and 1/100 second for Python. Which would be better? 
 
 [stackoverflow]: http://stackoverflow.com/questions/17093772/selectively-executing-unit-tests-with-googletest/17093852#17093852

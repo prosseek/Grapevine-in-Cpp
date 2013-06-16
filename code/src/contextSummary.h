@@ -14,8 +14,10 @@ class ContextSummary {
     std::time_t timestamp;
     
 public:
+    ContextSummary();
     ContextSummary(int id, std::map<std::string, int>* db = nullptr, int hops = 3, std::time_t timestamp = 0);
     ContextSummary(const ContextSummary& other);
+    ContextSummary& operator=(const ContextSummary& other);
     
     bool sameExceptHops(const ContextSummary& other);
     bool operator==(const ContextSummary& other);
