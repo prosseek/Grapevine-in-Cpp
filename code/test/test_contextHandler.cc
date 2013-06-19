@@ -3,7 +3,11 @@
 #include <gtest/gtest.h>
 #include <list>
 #include <map>
+#include <memory>
 #include <string>
+
+#include "groupUtils.h"
+#include "contextSummary.h"
 #include "contextHandler.h"
 
 using namespace std;
@@ -37,6 +41,7 @@ class ContextHandlerTest : public QuickTest {
          // delete groupSummary;
          // delete groupSummaryNull;
          result.clear();
+         ContextHandler::resetContextHandler();
      }
 
      std::map<std::string, int> db {
@@ -58,8 +63,28 @@ class ContextHandlerTest : public QuickTest {
 };
 
 TEST_F(ContextHandlerTest, setMyContext) {
+    // The summary is automatically destroyed, so it should be
+    // 1. pointer (otherwise, it will cause an error as the allocated value will be already gone)
+    // 2. forget about the summary, it's not mine anymore
+    std::map<std::string, int> db {
+           {"GroupsEnumerated",3},
+           {"Group0",101},{"Group1",102},{"Group2",103},
+           {"IdsAggregated",5},
+           {"Id0",10}, {"Id1",20}, {"Id2",30}, {"Id3",40}, {"Id4",50}};
+    ContextSummary* summary = new ContextSummary(1, db);
+    
+    std::map<std::string, int> db2 {
+           {"GroupsEnumerated",3},
+           {"Group0",101},{"Group1",102},{"Group2",103},
+           {"IdsAggregated",5},
+           {"Id0",10}, {"Id1",20}, {"Id2",30}, {"Id3",40}, {"Id4",50}};
+    ContextSummary* summary2 = new ContextSummary(2, db2);
+    
     h->setMyContext(*summary);
     EXPECT_TRUE(summary == h->getMyContext());
+    
+    h->setMyContext(*summary2);
+    EXPECT_TRUE(summary2 == h->getMyContext());
 }
 
 TEST_F(ContextHandlerTest, setReceivedSummariesMap) {
@@ -69,8 +94,8 @@ TEST_F(ContextHandlerTest, setReceivedSummariesMap) {
         
     summaries[1] = move(s);
     
-	h->setReceivedSummaries(summaries);
-    auto res = h->getReceivedSummaries();
+	h->moveReceivedSummaries(summaries);
+    auto res = h->moveReceivedSummaries();
     EXPECT_TRUE(*summary == *res[1].get());
 }
 
@@ -80,9 +105,12 @@ TEST_F(ContextHandlerTest, getInstance) {
     EXPECT_EQ(c1, c2);
 }
 
-TEST_F(ContextHandlerTest, setupGroupDefinition) {
+TEST_F(ContextHandlerTest, setupGroupDefinitionByCopying) {
     auto g = new GroupDefinition(100);
-    h->setupGroupDefinition(*g); // setup parameter is always reference
+    auto g2 = h->setupGroupDefinitionByCopying(*g); // setup parameter is always reference
+    
+    EXPECT_TRUE(g == g2);
+    
     auto d = h->getGroupDefinition(100);
     EXPECT_TRUE(d != NULL);
     auto e = h->getGroupContextSummary(100);
@@ -92,13 +120,17 @@ TEST_F(ContextHandlerTest, setupGroupDefinition) {
     EXPECT_TRUE(d == NULL);
     e = h->getGroupContextSummary(101);
     EXPECT_TRUE(d == NULL);
+    
+    // You should not free the g, as it's owned by the handler.
+    // delete g;
+    // --> gv(7163) malloc: *** error for object 0x10d509830: pointer being freed was not allocated
 }
 
-TEST_F(ContextHandlerTest, setupGroupDefinitionFromId) {
-    h->setupGroupDefinition(100);
+TEST_F(ContextHandlerTest, setupGroupDefinitionByCopyingFromId) {
+    auto groupPtr = h->setupGroupDefinitionByCopying(100);
     
     auto d = h->getGroupDefinition(100);
-    EXPECT_TRUE(d != NULL);
+    EXPECT_TRUE(d == groupPtr);
     auto e = h->getGroupContextSummary(100);
     EXPECT_TRUE(d != NULL);
     
@@ -106,34 +138,86 @@ TEST_F(ContextHandlerTest, setupGroupDefinitionFromId) {
     EXPECT_TRUE(d == NULL);
 }
 
-TEST_F(ContextHandlerTest, performGroupFormations) {
-    // # set group definistions in ContextHandler
+TEST_F(ContextHandlerTest, addGroupDefinitionByCopying) {
+
+    std::map<std::string, int> db {
+           {"GroupsEnumerated",3},
+           {"Group0",101},{"Group1",102},{"Group2",103},
+           {"IdsAggregated",5},
+           {"Id0",10}, {"Id1",20}, {"Id2",30}, {"Id3",40}, {"Id4",50}};
+    ContextSummary* summary = new ContextSummary(1, db);
+    
+    std::map<std::string, int> db2 {
+          {"GroupsEnumerated",3},
+          {"Group0",101},{"Group1",103},{"Group2",104},
+          {"IdsAggregated",3},
+          {"Id0",10}, {"Id1",20}, {"Id2",30}};
+    ContextSummary* summary2 = new ContextSummary(2, db2);
+    
+    // 1. set myContext as summary(id 1)
+    h->setMyContext(*summary);
+    EXPECT_TRUE(summary == h->getMyContext());
+    
+    // 2. received summaries 
+    map<int, unique_ptr<ContextSummary>> receivedSummaries;
+    receivedSummaries[0] = unique_ptr<ContextSummary>(new ContextSummary(*summary2));
+    
+    // 3. make group with id 100
     auto g = new GroupDefinition(100); 
-    // auto groupDefinitions = {100:g}
+    h->setMyContextByCopying(*summary); // just test <-- TODO, make it better later
     
-    h->setupGroupDefinition(*g);
+    h->moveReceivedSummaries(receivedSummaries); // {22:self.summary2})
+    //cout << r->to_string();
+    EXPECT_TRUE(h->getGroupContextSummary(100) == NULL);
+    // self.assertTrue(self.c.getGroupContext(100) is None)
+    h->addGroupDefinitionByCopying(*g);
+    EXPECT_TRUE(h->getGroupContextSummary(100) != NULL);
     
-    // # You *should* get group summary from the getGroupContext method
-    auto groupSummary = h->getGroupContextSummary(100);
-    // std::cout << groupSummary->getId() << std::endl;
-    // std::cout << groupSummary->to_string() << std::endl;
-    
-    // # myContext is from the summary with id 1
-    auto myContext = summary;
-    // std::cout << myContext->to_string() << std::endl;
-    // # handle it to make groupSummary to contain [1]
-    g->handleContextSummary(*groupSummary, *myContext);
+    // check if group 100 has member 1
+    vector<int> members;
+    GroupContextSummary* gs = h->getGroupContextSummary(100);
+    cout << gs->to_string() << endl;
+    GroupUtils::getGroupMembers(*gs, members);
+    Util::print(members);
     // 
-    // # before -> there should be only [1]
-    // members = getGroupMembers(groupSummary)
-    // self.assertTrue(sorted([1]) == sorted(members))
-    // 
-    // # after -> we have summaries with id 22
-    // summaries = [self.summary2]
-    // self.c.performGroupFormations(groupDefinitions, summaries)
     // groupSummary = self.c.getGroupContext(100)
     // members = getGroupMembers(groupSummary)
-    // 
-    // self.assertTrue(sorted([1,22]) == sorted(members))
+    // self.assertTrue(sorted([1, 22]) == sorted(members))
 }
+
+TEST_F(ContextHandlerTest, performGroupFormations) {
+    // // # set group definistions in ContextHandler
+    // auto g = new GroupDefinition(100); 
+    // //map<int, unique_ptr<GroupDefinition>> groupDefinitions;
+    // //groupDefinitions[100] = g; //  = {100:g}
+    // 
+    // h->setupGroupDefinition(*g);
+    // 
+    // // # You *should* get group summary from the getGroupContext method
+    // auto groupSummary = h->getGroupContextSummary(100);
+    // // std::cout << groupSummary->getId() << std::endl;
+    // // std::cout << groupSummary->to_string() << std::endl;
+    // 
+    // // # myContext is from the summary with id 1
+    // auto myContext = summary;
+    // // std::cout << myContext->to_string() << std::endl;
+    // // # handle it to make groupSummary to contain [1]
+    // g->handleContextSummary(*groupSummary, *myContext);
+    // // 
+    // // # before -> there should be only [1]
+    // // static void getGroupMembers(const ContextSummary& summary, std::vector<int>& result);
+    // std::vector<int> members;
+    // GroupUtils::getGroupMembers(*groupSummary, members);
+    // cout << members[0]; 
+    // // self.assertTrue(sorted([1]) == sorted(members))
+    // // 
+    // // # after -> we have summaries with id 22
+    // // summaries = [self.summary2]
+    // //g->performGroupFormations(*groupDefinitions, summaries)
+    // // groupSummary = self.c.getGroupContext(100)
+    // // members = getGroupMembers(groupSummary)
+    // // 
+    // // self.assertTrue(sorted([1,22]) == sorted(members))
+}
+
 

@@ -16,7 +16,7 @@ class ContextHandler {
     map<int, unique_ptr<GroupDefinition>> groupDefinitions;
     map<int, unique_ptr<GroupContextSummary>> groupContextSummaries;
     map<int, unique_ptr<ContextSummary>> receivedSummaries;
-    unique_ptr<ContextSummary> myContext;
+    unique_ptr<ContextSummary> myContext; // = NULL; // unique_ptr<ContextSummary>(NULL);
 protected:  
     // Need unit test
     // destructor removes all the allocated pointers, and reset the map
@@ -31,22 +31,22 @@ protected:
         m.clear();
     }
       
-    template<typename T>
-    void setMap(map<int, unique_ptr<T>>& oldMap, map<int, unique_ptr<T>>& newMap)
-    {
-        resetDictionary<T>(oldMap);
-        oldMap = move(newMap);
-    }
+    // template<typename T>
+    // void setMap(map<int, unique_ptr<T>>& oldMap, map<int, unique_ptr<T>>& newMap)
+    // {
+    //     resetDictionary<T>(oldMap);
+    //     oldMap = move(newMap);
+    // }
     
-    template<typename T>
-    void setMap(map<int, unique_ptr<T>>& oldMap, vector<unique_ptr<T>>& newVector)
-    {
-        resetDictionary<T>(oldMap);
-        for (int i = 0; i < newVector.size(); i++) {
-            int index = newVector[i]->getId();
-            oldMap[index] = move(newVector[i]);// std::move(r[i]);
-        }
-    }
+    // template<typename T>
+    // void setMap(map<int, unique_ptr<T>>& oldMap, vector<unique_ptr<T>>& newVector)
+    // {
+    //     resetDictionary<T>(oldMap);
+    //     for (int i = 0; i < newVector.size(); i++) {
+    //         int index = newVector[i]->getId();
+    //         oldMap[index] = move(newVector[i]);// std::move(r[i]);
+    //     }
+    // }
     
     template<typename T>
     T* getFromMap(map<int, unique_ptr<T>>& m, int gid)
@@ -56,7 +56,7 @@ protected:
         }
         return reinterpret_cast<T*>(NULL);
     }
-public:
+public:    
     //     def resetAllSummarydata(self):
     //         self.setMyContext(None)
     //         self.resetGroupDefinitions()
@@ -104,41 +104,48 @@ public:
     void setTau(int tau) {this->tau = tau;}
     int getTau() {return this->tau;}
     
-    void setReceivedSummaries(map<int, unique_ptr<ContextSummary>>& receivedSummaries)
+    // map<int, unique_ptr<GroupDefinition>> groupDefinitions;
+    // map<int, unique_ptr<GroupContextSummary>> groupContextSummaries;
+    // map<int, unique_ptr<ContextSummary>> receivedSummaries;
+    
+    void moveReceivedSummaries(map<int, unique_ptr<ContextSummary>>& receivedSummaries)
     {
-        return setMap<ContextSummary>(this->receivedSummaries, receivedSummaries);
+        this->receivedSummaries = move(receivedSummaries);
+        //return setMap<ContextSummary>(this->receivedSummaries, receivedSummaries);
     }
-    void setGroupContextSummaries(map<int, unique_ptr<GroupContextSummary>>& groupContextSummaries)
+    void moveGroupContextSummaries(map<int, unique_ptr<GroupContextSummary>>& groupContextSummaries)
     {
-        return setMap<GroupContextSummary>(this->groupContextSummaries, groupContextSummaries);
+        this->groupContextSummaries = move(groupContextSummaries);
+        //return setMap<GroupContextSummary>(this->groupContextSummaries, groupContextSummaries);
     }
-    void setGroupDefinitions(map<int, unique_ptr<GroupDefinition>>& groupDefinitions)
+    void moveGroupDefinitions(map<int, unique_ptr<GroupDefinition>>& groupDefinitions)
     {
-        return setMap<GroupDefinition>(this->groupDefinitions, groupDefinitions);
+        this->groupDefinitions = move(groupDefinitions);
+        //return setMap<GroupDefinition>(this->groupDefinitions, groupDefinitions);
     }
     
-    void setReceivedSummaries(vector<unique_ptr<ContextSummary>>& v)
-    {
-        return setMap<ContextSummary>(this->receivedSummaries, v);
-    }
-    void setGroupContextSummaries(vector<unique_ptr<GroupContextSummary>>& v)
-    {
-        return setMap<GroupContextSummary>(this->groupContextSummaries, v);
-    }
-    void setGroupDefinitions(vector<unique_ptr<GroupDefinition>>& v)
-    {
-        return setMap<GroupDefinition>(this->groupDefinitions, v);
-    }
+    // void setReceivedSummaries(vector<unique_ptr<ContextSummary>>& v)
+    // {
+    //     return setMap<ContextSummary>(this->receivedSummaries, v);
+    // }
+    // void setGroupContextSummaries(vector<unique_ptr<GroupContextSummary>>& v)
+    // {
+    //     return setMap<GroupContextSummary>(this->groupContextSummaries, v);
+    // }
+    // void setGroupDefinitions(vector<unique_ptr<GroupDefinition>>& v)
+    // {
+    //     return setMap<GroupDefinition>(this->groupDefinitions, v);
+    // }
 
-    map<int, unique_ptr<ContextSummary>> getReceivedSummaries()
+    map<int, unique_ptr<ContextSummary>> moveReceivedSummaries()
     {
         return move(this->receivedSummaries);
     }  
-    map<int, unique_ptr<GroupContextSummary>> getGroupContextSummaries()
+    map<int, unique_ptr<GroupContextSummary>> moveGroupContextSummaries()
     {
         return move(this->groupContextSummaries);
     }
-    map<int, unique_ptr<GroupDefinition>> getDefinitions()
+    map<int, unique_ptr<GroupDefinition>> moveDefinitions()
     {
         return move(this->groupDefinitions);
     }
@@ -210,24 +217,26 @@ public:
         }
     }
     
-    void setupGroupDefinition(int gId)
+    GroupDefinition* setupGroupDefinitionByCopying(int gId)
     {
         groupContextSummaries[gId] = unique_ptr<GroupContextSummary>(new GroupContextSummary(gId));
         groupDefinitions[gId] = unique_ptr<GroupDefinition>(new GroupDefinition(gId));
+        return groupDefinitions[gId].get(); 
     }
     
     // GroupDefinition is created outside
     // However, I want to keep the groupDefinition in a map
-    void setupGroupDefinition(GroupDefinition& groupDefinition)
+    GroupDefinition* setupGroupDefinitionByCopying(GroupDefinition& groupDefinition)
     {
         int gId = groupDefinition.getId();
         groupContextSummaries[gId] = unique_ptr<GroupContextSummary>(new GroupContextSummary(gId));
         groupDefinitions[gId] = unique_ptr<GroupDefinition>(&groupDefinition);
+        return groupDefinitions[gId].get(); // return the pointer of groupdefinition
     }
     
-    void addGroupDefinition(GroupDefinition& groupDefinition)
+    void addGroupDefinitionByCopying(GroupDefinition& groupDefinition)
     {
-        setupGroupDefinition(groupDefinition);
+        setupGroupDefinitionByCopying(groupDefinition);
         int gId = groupDefinition.getId();
         auto groupSummary = getGroupContextSummary(gId);
         auto myContext = getMyContext();
@@ -251,13 +260,24 @@ public:
         removeLocalSummary();
         this->myContext = unique_ptr<ContextSummary>(&summary);
     }
+    void setMyContext(ContextSummary* summary)
+    {
+        removeLocalSummary();
+        this->myContext = unique_ptr<ContextSummary>(summary);
+    }
+    void setMyContextByCopying(ContextSummary& summary)
+    {
+        removeLocalSummary();
+        this->myContext = unique_ptr<ContextSummary>(new ContextSummary(summary));
+    }
     // This is OK, as we return the reference 
     // of what is already there. 
     ContextSummary* getMyContext()  {return myContext.get();}
     
     void removeLocalSummary()
     {
-        myContext.reset();
+        if (myContext.get() != NULL)
+            myContext.reset();
     }
     
     void updateLocalSummary(ContextSummary& summary)

@@ -10,7 +10,7 @@
 class ContextSummary {
     int id;
     int hops;
-    std::map<std::string, int> db;
+    std::map<std::string, int> db {};
     std::time_t timestamp;
     
 public:
