@@ -22,6 +22,14 @@ void testPrint( map<int, unique_ptr<GroupContextSummary>> & m, int i )
   // SHOW( m.find(i)->first );
 }
 
+void printVector(const vector<int>& m)
+{
+    for (auto i: m)
+    {
+        cout << i << ":";
+    }
+}
+
 class QuickTest : public testing::Test {
  protected:
   virtual void SetUp() {
@@ -150,18 +158,18 @@ TEST_F(ContextHandlerTest, setupGroupDefinition) {
     EXPECT_TRUE(d == NULL);
 }
 
-TEST_F(ContextHandlerTest, addGroupDefinitionByCopying) {
+TEST_F(ContextHandlerTest, addGroupDefinitionByMoving) {
 
     std::map<std::string, int> db {
            {"GroupsEnumerated",3},
-           {"Group0",101},{"Group1",102},{"Group2",103},
+           {"Group0",100},{"Group1",101},{"Group2",102},
            {"IdsAggregated",5},
            {"Id0",10}, {"Id1",20}, {"Id2",30}, {"Id3",40}, {"Id4",50}};
     ContextSummary* summary = new ContextSummary(1, db);
     
     std::map<std::string, int> db2 {
           {"GroupsEnumerated",3},
-          {"Group0",101},{"Group1",103},{"Group2",104},
+          {"Group0",100},{"Group1",103},{"Group2",104},
           {"IdsAggregated",3},
           {"Id0",10}, {"Id1",20}, {"Id2",30}};
     ContextSummary* summary2 = new ContextSummary(2, db2);
@@ -186,54 +194,21 @@ TEST_F(ContextHandlerTest, addGroupDefinitionByCopying) {
     // 3. make group with id 100
     auto g = new GroupDefinition(100); 
     EXPECT_TRUE(h->getGroupContextSummary(100) == NULL);
-    h->addGroupDefinitionByMoving(g);
+    h->addGroupDefinitionByMoving(g); // <------ 
     EXPECT_TRUE(h->getGroupContextSummary(100) != NULL);
     
     // check if group 100 has member 1
     vector<int> members;
     GroupContextSummary* gs = h->getGroupContextSummary(100);
-    cout << gs->to_string() << endl;
     GroupUtils::getGroupMembers(*gs, members);
-    Util::print(members);
-    // 
-    // groupSummary = self.c.getGroupContext(100)
-    // members = getGroupMembers(groupSummary)
-    // self.assertTrue(sorted([1, 22]) == sorted(members))
+    // Util::print(members);
+    EXPECT_TRUE(Util::in(members, 1)); // 1 is a member -> From context summary
+    EXPECT_TRUE(Util::in(members, 2)); // 2 is also a member -> from received summary
 }
 
 TEST_F(ContextHandlerTest, performGroupFormations) {
-    // // # set group definistions in ContextHandler
-    // auto g = new GroupDefinition(100); 
-    // //map<int, unique_ptr<GroupDefinition>> groupDefinitions;
-    // //groupDefinitions[100] = g; //  = {100:g}
-    // 
-    // h->setupGroupDefinition(*g);
-    // 
-    // // # You *should* get group summary from the getGroupContext method
-    // auto groupSummary = h->getGroupContextSummary(100);
-    // // std::cout << groupSummary->getId() << std::endl;
-    // // std::cout << groupSummary->to_string() << std::endl;
-    // 
-    // // # myContext is from the summary with id 1
-    // auto myContext = summary;
-    // // std::cout << myContext->to_string() << std::endl;
-    // // # handle it to make groupSummary to contain [1]
-    // g->handleContextSummary(*groupSummary, *myContext);
-    // // 
-    // // # before -> there should be only [1]
-    // // static void getGroupMembers(const ContextSummary& summary, std::vector<int>& result);
-    // std::vector<int> members;
-    // GroupUtils::getGroupMembers(*groupSummary, members);
-    // cout << members[0]; 
-    // // self.assertTrue(sorted([1]) == sorted(members))
-    // // 
-    // // # after -> we have summaries with id 22
-    // // summaries = [self.summary2]
-    // //g->performGroupFormations(*groupDefinitions, summaries)
-    // // groupSummary = self.c.getGroupContext(100)
-    // // members = getGroupMembers(groupSummary)
-    // // 
-    // // self.assertTrue(sorted([1,22]) == sorted(members))
+    // I skip the unit test now, as addGroupDefinitionByMoving
+    // calls performGroupFormations
 }
 
 
