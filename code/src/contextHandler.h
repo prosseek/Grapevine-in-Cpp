@@ -30,24 +30,7 @@ protected:
         }
         m.clear();
     }
-      
-    // template<typename T>
-    // void setMap(map<int, unique_ptr<T>>& oldMap, map<int, unique_ptr<T>>& newMap)
-    // {
-    //     resetDictionary<T>(oldMap);
-    //     oldMap = move(newMap);
-    // }
-    
-    // template<typename T>
-    // void setMap(map<int, unique_ptr<T>>& oldMap, vector<unique_ptr<T>>& newVector)
-    // {
-    //     resetDictionary<T>(oldMap);
-    //     for (int i = 0; i < newVector.size(); i++) {
-    //         int index = newVector[i]->getId();
-    //         oldMap[index] = move(newVector[i]);// std::move(r[i]);
-    //     }
-    // }
-    
+
     template<typename T>
     T* getFromMap(map<int, unique_ptr<T>>& m, int gid)
     {
@@ -57,11 +40,6 @@ protected:
         return reinterpret_cast<T*>(NULL);
     }
 public:    
-    //     def resetAllSummarydata(self):
-    //         self.setMyContext(None)
-    //         self.resetGroupDefinitions()
-    //         self.setgroupContextSummaries({})
-    //         self.setReceivedSummaries({})
     void resetAllSummarydata()
     {
         removeLocalSummary();
@@ -104,39 +82,19 @@ public:
     void setTau(int tau) {this->tau = tau;}
     int getTau() {return this->tau;}
     
-    // map<int, unique_ptr<GroupDefinition>> groupDefinitions;
-    // map<int, unique_ptr<GroupContextSummary>> groupContextSummaries;
-    // map<int, unique_ptr<ContextSummary>> receivedSummaries;
-    
     void moveReceivedSummaries(map<int, unique_ptr<ContextSummary>>& receivedSummaries)
     {
         this->receivedSummaries = move(receivedSummaries);
-        //return setMap<ContextSummary>(this->receivedSummaries, receivedSummaries);
     }
     void moveGroupContextSummaries(map<int, unique_ptr<GroupContextSummary>>& groupContextSummaries)
     {
         this->groupContextSummaries = move(groupContextSummaries);
-        //return setMap<GroupContextSummary>(this->groupContextSummaries, groupContextSummaries);
     }
     void moveGroupDefinitions(map<int, unique_ptr<GroupDefinition>>& groupDefinitions)
     {
         this->groupDefinitions = move(groupDefinitions);
-        //return setMap<GroupDefinition>(this->groupDefinitions, groupDefinitions);
     }
     
-    // void setReceivedSummaries(vector<unique_ptr<ContextSummary>>& v)
-    // {
-    //     return setMap<ContextSummary>(this->receivedSummaries, v);
-    // }
-    // void setGroupContextSummaries(vector<unique_ptr<GroupContextSummary>>& v)
-    // {
-    //     return setMap<GroupContextSummary>(this->groupContextSummaries, v);
-    // }
-    // void setGroupDefinitions(vector<unique_ptr<GroupDefinition>>& v)
-    // {
-    //     return setMap<GroupDefinition>(this->groupDefinitions, v);
-    // }
-
     map<int, unique_ptr<ContextSummary>> moveReceivedSummaries()
     {
         return move(this->receivedSummaries);
@@ -164,7 +122,7 @@ public:
     }
     
     
-    vector<unique_ptr<ContextSummary>> getValues(const map<int, unique_ptr<ContextSummary>>& receivedSummaries)
+    vector<unique_ptr<ContextSummary>> copyValues(const map<int, unique_ptr<ContextSummary>>& receivedSummaries)
     {
         // get values from summary
         vector<unique_ptr<ContextSummary>> result;
@@ -172,21 +130,13 @@ public:
         {
             result.push_back(unique_ptr<ContextSummary>(new ContextSummary(*items.second.get())));
         }
-        
         return result;
     }
     
     void performGroupFormations(map<int, unique_ptr<GroupDefinition>>& groupDefinitions, 
                                 map<int, unique_ptr<ContextSummary>>& summaries)
     {
-        // std::vector<unique_ptr<ContextSummary>> result;
-        //     
-        // for(auto& item: summaries)
-        //     result.push_back(move(item.second));
-        // return result;
-        
-        // ???????
-        auto values = getValues(summaries);
+        auto values = copyValues(summaries);
         performGroupFormations(groupDefinitions, values);
     }
                                 
@@ -204,8 +154,6 @@ public:
                 int uid = summary->getId();
                 if (gid == uid)
                 {
-                    // summary is actually group, so we can
-                    // safely downcast it into GroupContextSummary&
                     gd.second->handleGroupSummary(*groupSummary, 
                        static_cast<GroupContextSummary&>(*summary.get()));
                 }
@@ -217,33 +165,61 @@ public:
         }
     }
     
-    GroupDefinition* setupGroupDefinitionByCopying(int gId)
+    GroupDefinition* setupGroupDefinition(int gId)
     {
         groupContextSummaries[gId] = unique_ptr<GroupContextSummary>(new GroupContextSummary(gId));
         groupDefinitions[gId] = unique_ptr<GroupDefinition>(new GroupDefinition(gId));
         return groupDefinitions[gId].get(); 
     }
     
-    // GroupDefinition is created outside
-    // However, I want to keep the groupDefinition in a map
-    GroupDefinition* setupGroupDefinitionByCopying(GroupDefinition& groupDefinition)
+    GroupDefinition* setupGroupDefinitionByMoving(GroupDefinition& groupDefinition)
     {
         int gId = groupDefinition.getId();
-        groupContextSummaries[gId] = unique_ptr<GroupContextSummary>(new GroupContextSummary(gId));
+        GroupContextSummary* newGroupSummary = new GroupContextSummary(gId);
+        groupContextSummaries[gId] = unique_ptr<GroupContextSummary>(newGroupSummary);
         groupDefinitions[gId] = unique_ptr<GroupDefinition>(&groupDefinition);
         return groupDefinitions[gId].get(); // return the pointer of groupdefinition
     }
     
-    void addGroupDefinitionByCopying(GroupDefinition& groupDefinition)
+    GroupDefinition* setupGroupDefinitionByMoving(GroupDefinition* groupDefinition)
     {
-        setupGroupDefinitionByCopying(groupDefinition);
+        setupGroupDefinitionByMoving(*groupDefinition);
+    }
+    
+    void addGroupDefinition(int gId)
+    {
+        GroupDefinition* gd = setupGroupDefinition(gId); // 
+        // duplicate code 
+        // TODO - remove it later
+        GroupContextSummary* groupSummary = getGroupContextSummary(gId);
+
+        ContextSummary* myContext = getMyContext();
+        
+        if (myContext != NULL) 
+        {
+            gd->handleContextSummary(groupSummary, myContext);
+        }
+        performGroupFormations(groupDefinitions, receivedSummaries);
+    }
+    
+    void addGroupDefinitionByMoving(GroupDefinition* groupDefinition)
+    {
+        addGroupDefinitionByMoving(*groupDefinition);
+    }
+    
+    void addGroupDefinitionByMoving(GroupDefinition& groupDefinition)
+    {
         int gId = groupDefinition.getId();
+        //cout << "***" << gId << endl;
+        GroupDefinition* gd = setupGroupDefinitionByMoving(groupDefinition);
+        
         auto groupSummary = getGroupContextSummary(gId);
+        //cout << "***" << groupSummary->getId() << endl;
         auto myContext = getMyContext();
         
         if (myContext != NULL) 
         {
-            groupDefinition.handleContextSummary(*groupSummary, *myContext);
+            gd->handleContextSummary(*groupSummary, *myContext);
         }
         performGroupFormations(groupDefinitions, receivedSummaries);
     }
@@ -255,20 +231,24 @@ public:
     /*
         setMyContext removes the existing summary, and set the new summary to the myContext
     */
-    void setMyContext(ContextSummary& summary)
+    void moveMyContext(ContextSummary& summary)
     {
-        removeLocalSummary();
+        // the ownership of summary is moved, if you delete summary, it will cause an error
         this->myContext = unique_ptr<ContextSummary>(&summary);
     }
-    void setMyContext(ContextSummary* summary)
+    void moveMyContext(ContextSummary* summary)
     {
-        removeLocalSummary();
         this->myContext = unique_ptr<ContextSummary>(summary);
     }
-    void setMyContextByCopying(ContextSummary& summary)
+    void copyMyContext(ContextSummary& summary)
     {
-        removeLocalSummary();
+        //removeLocalSummary();
         this->myContext = unique_ptr<ContextSummary>(new ContextSummary(summary));
+    }
+    void copyMyContext(ContextSummary* summary)
+    {
+        //removeLocalSummary();
+        this->myContext = unique_ptr<ContextSummary>(new ContextSummary(*summary));
     }
     // This is OK, as we return the reference 
     // of what is already there. 

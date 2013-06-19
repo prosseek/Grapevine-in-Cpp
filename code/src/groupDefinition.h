@@ -24,6 +24,8 @@ public:
     
     void handleContextSummary(GroupContextSummary& currentGroupSummary, const ContextSummary& newSummary);
     void handleGroupSummary(GroupContextSummary& currentGroupSummary, const GroupContextSummary& newSummary);
+    void handleContextSummary(GroupContextSummary* currentGroupSummary, const ContextSummary* newSummary);
+    void handleGroupSummary(GroupContextSummary* currentGroupSummary, const GroupContextSummary* newSummary);
 };
 
 

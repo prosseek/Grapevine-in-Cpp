@@ -6,6 +6,7 @@
 #include <ctime>
 #include <cstddef>
 #include <vector>
+#include <iostream>
 
 class ContextSummary {
     int id;
@@ -14,21 +15,42 @@ class ContextSummary {
     std::time_t timestamp;
     
 public:
-    ContextSummary();
-    ContextSummary(int id, int hops = 3, std::time_t timestamp = 0)
+    ~ContextSummary()
     {
-        // create null map and send it
-        std::map<std::string, int> m;
-        ContextSummary(id, m, hops, timestamp);
+        // std::cout << "Dying ...\n";
     }
-    ContextSummary(int id, const std::map<std::string, int>& db, int hops = 3, std::time_t timestamp = 0)
+    ContextSummary() : ContextSummary(-1)
+    {
+    }
+    
+    ContextSummary(const ContextSummary& other)
+    {
+        //std::cout << "copy constructor";
+        this->id = other.id;
+        this->hops = other.hops;
+        this->timestamp = other.timestamp;
+        this->db = other.db;
+    }
+    
+    // ContextSummary(int id, int hops = 3, std::time_t timestamp = 0) : 
+    //     ContextSummary(id, {}, hops, timestamp)
+    // {
+    //     // // create null map and send it
+    //     // std::map<std::string, int> m;
+    //     // // ContextSummary(id, m, hops, timestamp);
+    //     // this->id = id;
+    //     // this->db = m;
+    //     // this->hops = hops;
+    //     // this->timestamp = timestamp;
+    // }
+    ContextSummary(int id, const std::map<std::string, int>& db = {}, int hops = 3, std::time_t timestamp = 0)
     {
         this->id = id;
         this->db = db;
         this->hops = hops;
         this->timestamp = timestamp;
     }
-    ContextSummary(const ContextSummary& other);
+
     ContextSummary& operator=(const ContextSummary& other);
     
     bool sameExceptHops(const ContextSummary& other);

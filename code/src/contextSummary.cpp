@@ -4,10 +4,10 @@
 #include "util.h"
 
 // TODO 
-ContextSummary::ContextSummary()
-{
-    ContextSummary(-1); // not assigned
-}
+// ContextSummary::ContextSummary()
+// {
+//     ContextSummary(-1); // not assigned
+// }
 
 // ContextSummary::ContextSummary(int id, std::map<std::string, int>* db, int hops, std::time_t timestamp)
 // {
@@ -24,20 +24,20 @@ ContextSummary::ContextSummary()
 // }
 
 //TODO duplicate code
-ContextSummary::ContextSummary(const ContextSummary& other)
-{
-    //std::cout << "copy constructor";
-    this->id = other.id;
-    this->hops = other.hops;
-    this->timestamp = other.timestamp;
-    
-    //TODO
-    // Now it just copies the pointer of the db, but it may be deepcopy ultimately
-    this->db = other.db;
-    
-    // std::cout << this->to_string() << std::endl;
-    // std::cout << other.to_string() << std::endl;
-}
+// ContextSummary::ContextSummary(const ContextSummary& other)
+// {
+//     //std::cout << "copy constructor";
+//     this->id = other.id;
+//     this->hops = other.hops;
+//     this->timestamp = other.timestamp;
+//     
+//     //TODO
+//     // Now it just copies the pointer of the db, but it may be deepcopy ultimately
+//     this->db = other.db;
+//     
+//     // std::cout << this->to_string() << std::endl;
+//     // std::cout << other.to_string() << std::endl;
+// }
 
 ContextSummary& ContextSummary::operator=(const ContextSummary& other)
 {

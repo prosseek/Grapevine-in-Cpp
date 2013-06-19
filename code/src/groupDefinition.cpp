@@ -33,3 +33,13 @@ void GroupDefinition::handleGroupSummary(GroupContextSummary& currentGroupSummar
     Util::removeAll(newMemberIds, memberIds); // the newMemberIds holds the result
     currentGroupSummary.addMemberIds(newMemberIds);
 }
+
+void GroupDefinition::handleContextSummary(GroupContextSummary* currentGroupSummary, const ContextSummary* newSummary)
+{
+    return handleContextSummary(*currentGroupSummary, *newSummary);
+}
+
+void GroupDefinition::handleGroupSummary(GroupContextSummary* currentGroupSummary, const GroupContextSummary* newSummary)
+{
+    return handleContextSummary(*currentGroupSummary, *newSummary);
+}

@@ -12,6 +12,16 @@
 
 using namespace std;
 
+//http://stackoverflow.com/questions/427589/inspecting-standard-container-stdmap-contents-with-gdb
+//#define SHOW(X) cout << # X " = " << ((X).get()->to_string()) << endl
+
+void testPrint( map<int, unique_ptr<GroupContextSummary>> & m, int i )
+{
+    cout <<  m[i].get()->to_string() << endl;
+  // SHOW( m[i] );
+  // SHOW( m.find(i)->first );
+}
+
 class QuickTest : public testing::Test {
  protected:
   virtual void SetUp() {
@@ -62,7 +72,7 @@ class ContextHandlerTest : public QuickTest {
      vector<int> result;
 };
 
-TEST_F(ContextHandlerTest, setMyContext) {
+TEST_F(ContextHandlerTest, moveMyContext) {
     // The summary is automatically destroyed, so it should be
     // 1. pointer (otherwise, it will cause an error as the allocated value will be already gone)
     // 2. forget about the summary, it's not mine anymore
@@ -80,14 +90,16 @@ TEST_F(ContextHandlerTest, setMyContext) {
            {"Id0",10}, {"Id1",20}, {"Id2",30}, {"Id3",40}, {"Id4",50}};
     ContextSummary* summary2 = new ContextSummary(2, db2);
     
-    h->setMyContext(*summary);
+    h->moveMyContext(*summary);
     EXPECT_TRUE(summary == h->getMyContext());
     
-    h->setMyContext(*summary2);
+    h->moveMyContext(*summary2);
     EXPECT_TRUE(summary2 == h->getMyContext());
-}
+    
+    // delete summary; // <-- This will raise an error 
+} 
 
-TEST_F(ContextHandlerTest, setReceivedSummariesMap) {
+TEST_F(ContextHandlerTest, moveReceivedSummaries) {
 
     map<int, unique_ptr<ContextSummary>> summaries;
 	auto s = unique_ptr<ContextSummary>(new ContextSummary(*summary));
@@ -105,9 +117,9 @@ TEST_F(ContextHandlerTest, getInstance) {
     EXPECT_EQ(c1, c2);
 }
 
-TEST_F(ContextHandlerTest, setupGroupDefinitionByCopying) {
+TEST_F(ContextHandlerTest, setupGroupDefinitionByMoving) {
     auto g = new GroupDefinition(100);
-    auto g2 = h->setupGroupDefinitionByCopying(*g); // setup parameter is always reference
+    auto g2 = h->setupGroupDefinitionByMoving(*g); // setup parameter is always reference
     
     EXPECT_TRUE(g == g2);
     
@@ -126,8 +138,8 @@ TEST_F(ContextHandlerTest, setupGroupDefinitionByCopying) {
     // --> gv(7163) malloc: *** error for object 0x10d509830: pointer being freed was not allocated
 }
 
-TEST_F(ContextHandlerTest, setupGroupDefinitionByCopyingFromId) {
-    auto groupPtr = h->setupGroupDefinitionByCopying(100);
+TEST_F(ContextHandlerTest, setupGroupDefinition) {
+    auto groupPtr = h->setupGroupDefinition(100);
     
     auto d = h->getGroupDefinition(100);
     EXPECT_TRUE(d == groupPtr);
@@ -154,23 +166,27 @@ TEST_F(ContextHandlerTest, addGroupDefinitionByCopying) {
           {"Id0",10}, {"Id1",20}, {"Id2",30}};
     ContextSummary* summary2 = new ContextSummary(2, db2);
     
+    h->copyMyContext(*summary); 
+    EXPECT_TRUE(summary != h->getMyContext());
+    delete summary;
+    
     // 1. set myContext as summary(id 1)
-    h->setMyContext(*summary);
+    summary = new ContextSummary(1, db);
+    h->moveMyContext(*summary);
     EXPECT_TRUE(summary == h->getMyContext());
     
     // 2. received summaries 
     map<int, unique_ptr<ContextSummary>> receivedSummaries;
-    receivedSummaries[0] = unique_ptr<ContextSummary>(new ContextSummary(*summary2));
+    auto copiedSummary = new ContextSummary(*summary2);
+    receivedSummaries[2] = unique_ptr<ContextSummary>(copiedSummary);
+    h->moveReceivedSummaries(receivedSummaries); // {22:self.summary2})
+    EXPECT_TRUE(h->getReceivedSummary(2) == copiedSummary);
+    EXPECT_TRUE(h->getReceivedSummary(12) == NULL);
     
     // 3. make group with id 100
     auto g = new GroupDefinition(100); 
-    h->setMyContextByCopying(*summary); // just test <-- TODO, make it better later
-    
-    h->moveReceivedSummaries(receivedSummaries); // {22:self.summary2})
-    //cout << r->to_string();
     EXPECT_TRUE(h->getGroupContextSummary(100) == NULL);
-    // self.assertTrue(self.c.getGroupContext(100) is None)
-    h->addGroupDefinitionByCopying(*g);
+    h->addGroupDefinitionByMoving(g);
     EXPECT_TRUE(h->getGroupContextSummary(100) != NULL);
     
     // check if group 100 has member 1
