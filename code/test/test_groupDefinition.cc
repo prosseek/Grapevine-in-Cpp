@@ -24,7 +24,7 @@ class GroupDefinitionTest : public QuickTest {
       
       db = {{"GroupsEnumerated",3},
             {"Group0",100},{"Group1",101},{"Group2",102}};
-      summary = new ContextSummary(1, &db);
+      summary = new ContextSummary(1, db);
       
       groupDb = {{"MembersEnumerated",3},
       {"Member0",5}, {"Member1",2}, {"Member2",3}}; //  # 1 is not in the member
@@ -49,7 +49,7 @@ class GroupDefinitionTest : public QuickTest {
 
 
 TEST_F(GroupDefinitionTest, handleContextSummary1) {
-    GroupContextSummary* groupSummary = new GroupContextSummary(100, &groupDb);
+    GroupContextSummary* groupSummary = new GroupContextSummary(100, groupDb);
     GroupDefinition* g = new GroupDefinition(500);
     
     std::vector<int> members;
@@ -67,7 +67,7 @@ TEST_F(GroupDefinitionTest, handleContextSummary1) {
 
 
 TEST_F(GroupDefinitionTest, handleContextSummary2) {
-    GroupContextSummary* groupSummary = new GroupContextSummary(110, &groupDb);
+    GroupContextSummary* groupSummary = new GroupContextSummary(110, groupDb);
     GroupDefinition* g = new GroupDefinition(500);
         
     //    # after the operation, 1 is still "not" in the member, as gid 
@@ -87,8 +87,8 @@ TEST_F(GroupDefinitionTest, handleContextSummary2) {
 
 
 TEST_F(GroupDefinitionTest, handleGroupSummary) {
-    GroupContextSummary* currentGroupSummary = new GroupContextSummary(110, &groupDb);
-    GroupContextSummary* newGroupSummary = new GroupContextSummary(101, &groupDb2);
+    GroupContextSummary* currentGroupSummary = new GroupContextSummary(110, groupDb);
+    GroupContextSummary* newGroupSummary = new GroupContextSummary(101, groupDb2);
     GroupDefinition* g = new GroupDefinition(500);
     
     std::vector<int> members;

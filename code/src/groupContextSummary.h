@@ -13,10 +13,15 @@ class GroupContextSummary : public ContextSummary {
     
 public:
     // http://stackoverflow.com/questions/120876/c-superclass-constructor-calling-rules
-    GroupContextSummary(int id, std::map<std::string, int>* db = nullptr, int hops = 3, std::time_t timestamp = 0) : \
+    GroupContextSummary(int id, int hops = 3, std::time_t timestamp = 0) : \
+        ContextSummary(id, hops, timestamp) {}
+    GroupContextSummary(int id, std::map<std::string, int> db, int hops = 3, std::time_t timestamp = 0) : \
         ContextSummary(id, db, hops, timestamp) {}
     GroupContextSummary(const GroupContextSummary& other) : \
         ContextSummary(other) {}
+    GroupContextSummary() {
+        GroupContextSummary(-1); // , db, hops, timestamp);
+    }
         
     std::string to_string() const
     {   

@@ -1,9 +1,14 @@
+#include <cassert>
+
 #include "groupUtils.h"
 #include "util.h"
 #include "groupDefinition.h"
 
 void GroupDefinition::handleContextSummary(GroupContextSummary& currentGroupSummary, const ContextSummary& newSummary)
 {
+    assert(&currentGroupSummary != NULL);
+    assert(&newSummary != NULL);
+    
     int uid = newSummary.getId();
     int gid = currentGroupSummary.getId();
     

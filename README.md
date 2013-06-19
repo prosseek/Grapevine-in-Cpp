@@ -24,5 +24,7 @@ C++ doesn't have a good way to point out where the error occurs. Throw Error() o
 2. Some things are not clear.
     2.1 Do we make the map into the ContextHandler as reference so that the whole DB is copied when initialized? Or, do we just keep it as it is using pointer?
 3. The time stamp is 1 second resolution in C++, and 1/100 second for Python. Which would be better? 
+3. The map structure for received summary is {id:ContextSummary}. It may be a better idea to have {id:*ContextSummary}, but I'm not sure if the pointer approach would work. 
+4. Interface parameters are confusing, somethings are references and others are pointers 
 
 [stackoverflow]: http://stackoverflow.com/questions/17093772/selectively-executing-unit-tests-with-googletest/17093852#17093852

@@ -25,8 +25,8 @@ class ContextSummaryTest : public QuickTest {
       m["abc"] = 10;
       m["def"] = 20;
       m["xyz"] = 100;
-      c = new ContextSummary(1, &this->m);
-      c2 = new ContextSummary(1, &this->m);
+      c = new ContextSummary(1, m);
+      c2 = new ContextSummary(1, m);
   }
   
   virtual void TearDown() {
@@ -128,3 +128,6 @@ TEST_F(ContextSummaryTest, incrementHops) {
     int newHops = c->getHops();
     EXPECT_TRUE(hops == newHops-1);
 }
+
+// MORE tests
+// 1. check if db is null, what would happen?

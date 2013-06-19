@@ -6,7 +6,6 @@
 //
 #include <algorithm>
 #include "util.h"
-
 //namespace bloomier {
 
 /**
@@ -139,6 +138,13 @@ bool Util::in(std::vector<T> vectorArray, T value)
 template bool Util::in(std::vector<int> vectorArray, int value);
 template bool Util::in(std::vector<std::string> vectorArray, std::string value);
 
+// template <class T> 
+// bool Util::in(std::map<int, std::unique_ptr<T>> m, int value)
+// {
+//     
+// }
+// template bool Util::in(std::map<int, std::unique_ptr<ContextSummary>> m, int value);
+
 /**
  * emulation of copy.deepcopy() from python. 
  */
@@ -151,16 +157,16 @@ void Util::deepcopy(const std::map<std::string, int> source, std::map<std::strin
     }
 }
 
-template <class T>
-std::vector<T> Util::getKeys(std::map<T, int>& map)
-{
-    std::vector<std::string> result;
-
-    for(auto key: map)
-        result.push_back(key.first);
-    return result;
-}
-template std::vector<std::string> Util::getKeys(std::map<std::string, int>& map);
+// template <class T>
+// std::vector<T> Util::getKeys(std::map<T, int>& map)
+// {
+//     std::vector<std::string> result;
+// 
+//     for(auto key: map)
+//         result.push_back(key.first);
+//     return result;
+// }
+// template std::vector<std::string> Util::getKeys(std::map<std::string, int>& map);
 
 template<class T>
 bool Util::sameTwoVectors(std::vector<T> first, std::vector<T> second)
@@ -174,33 +180,36 @@ bool Util::sameTwoVectors(std::vector<T> first, std::vector<T> second)
 template bool Util::sameTwoVectors(std::vector<int> first, std::vector<int> second);
 template bool Util::sameTwoVectors(std::vector<std::string> first, std::vector<std::string> second);
 
-template<class T>
-std::string Util::to_string(std::map<T, int>& m)
-{
-    return to_string(&m);
-}
-template std::string Util::to_string(std::map<std::string, int>& m);
-template std::string Util::to_string(std::map<int, int>& m);
-
-template<class T>
-std::string Util::to_string(std::map<T, int>* p)
-{
-    std::string res;
-    if (p->empty()) return "{}";
-    
-    res += "{";
-    for (auto item: *p)
-    {
-        res += item.first;
-        res += ":";
-        res += std::to_string(item.second);
-        res += ",";
-    }
-    res = res.substr(0, res.size()-1);
-    res += "}";
-    return res;
-}
-template std::string Util::to_string(std::map<std::string, int>*);
+// template<class T>
+// std::string Util::to_string(std::map<T, int>& m)
+// {
+//     return to_string(&m);
+// }
+// template std::string Util::to_string(std::map<std::string, int>& m);
+// template std::string Util::to_string(std::map<int, int>& m);
+// 
+// template<class T>
+// std::string Util::to_string(std::map<T, int>* p)
+// {
+//     if (p == nullptr) {
+//         return "< NULL DB >";
+//     }
+//     std::string res;
+//     if (p->empty()) return "{}";
+//     
+//     res += "{";
+//     for (auto item: *p)
+//     {
+//         res += item.first;
+//         res += ":";
+//         res += std::to_string(item.second);
+//         res += ",";
+//     }
+//     res = res.substr(0, res.size()-1);
+//     res += "}";
+//     return res;
+// }
+// template std::string Util::to_string(std::map<std::string, int>*);
 
 /*
  * DEBUGGING FUNCTIONS : print

@@ -1,5 +1,5 @@
 #include <sstream>
-
+#include <cassert>
 #include "contextSummary.h"
 #include "util.h"
 
@@ -9,13 +9,19 @@ ContextSummary::ContextSummary()
     ContextSummary(-1); // not assigned
 }
 
-ContextSummary::ContextSummary(int id, std::map<std::string, int>* db, int hops, std::time_t timestamp)
-{
-    this->id = id;
-    this->db = db;
-    this->hops = hops;
-    this->timestamp = timestamp;
-}
+// ContextSummary::ContextSummary(int id, std::map<std::string, int>* db, int hops, std::time_t timestamp)
+// {
+//     this->id = id;
+//     
+//     //TODO <-- big issue, db should not be null
+//     // db should not be null
+//     if (db == nullptr) {
+//         //db = 
+//     } 
+//     this->db = db;
+//     this->hops = hops;
+//     this->timestamp = timestamp;
+// }
 
 //TODO duplicate code
 ContextSummary::ContextSummary(const ContextSummary& other)
@@ -46,11 +52,13 @@ ContextSummary& ContextSummary::operator=(const ContextSummary& other)
 
 std::vector<std::string> ContextSummary::keySet()
 {
-    return Util::getKeys(*(this->db));
+    //assert (db != NULL);
+    return Util::getKeys((this->db));
 }
 
 std::string ContextSummary::to_string() const
 {
+    //assert (db != NULL);
     //return "(%d)[%d]:%s - (%s)" % (self.uid, self.hops, str(self.db), self.timestamp)
     //std::string dbString = Util::to_string(*(this->db));
     std::string dbString = Util::to_string(db);
@@ -73,34 +81,42 @@ bool ContextSummary::operator==(const ContextSummary& other)
     return sameExceptHops(other) && this->hops == other.hops;
 }
 
-bool ContextSummary::get(std::string key, int& result) const
-{
-    bool contained = containsKey(key);
-    if (contained == true) {
-        result = (*db)[key];
-        return true;
-    }
-    return false;
-}
+// can't use const as compiler thinks db[key] modifies something
+// bool ContextSummary::get(const std::string& key, int& result) 
+// {
+//     //assert (db != NULL);
+//     bool contained = containsKey(key);
+//     if (contained == true) {
+//         result = db[key];
+//         return true;
+//     }
+//     return false;
+// }
 
-void ContextSummary::put(std::string key, int value)
+void ContextSummary::put(const std::string& key, int value)
 {
+    //assert (db != NULL);
     //TODO - for bloomier filter, when key is not in the db, it should throw an error
-    (*db)[key] = value;
+    db[key] = value;
 }
 
 bool ContextSummary::containsKey(std::string key) const
 {
-    std::map<std::string,int>::iterator it = db->find(key);
-    if (it == db->end()) return false;
+    // db can be null
+    //assert (db != NULL);
+    //std::map<std::string,int>::iterator it = db.find(key);
+    
+    auto it = db.find(key);
+    if (it == db.end()) return false;
     return true;
 }
 
 void ContextSummary::remove(std::string key)
 {
-    std::map<std::string,int>::iterator it = db->find(key);
-    if (it == db->end()) return;
-    db->erase(it);
+    //assert (db != NULL);
+    std::map<std::string,int>::iterator it = db.find(key);
+    if (it == db.end()) return;
+    db.erase(it);
 }
 
 /*

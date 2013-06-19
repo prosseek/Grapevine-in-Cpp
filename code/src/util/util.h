@@ -19,6 +19,7 @@
 #include <string>
 #include <iomanip>
 #include <sstream>
+#include <memory>
 
 //namespace bloomier {
     
@@ -79,7 +80,10 @@ public:
     static bool in(std::set<int> setArray, int value);
     template <class T> 
     static bool in(std::vector<T> vectorArray, T value);
-    
+    //map<int, unique_ptr<ContextSummary>>
+    // template <class T> 
+    // static bool in(std::map<int, std::unique_ptr<T>> m, int value)
+    // {}
     /**
      * deepcopy from source to dest
      */
@@ -89,17 +93,56 @@ public:
      * getKeys from map
      */
     
-    template<class T>
-    static std::vector<T> getKeys(std::map<T, int>& map);
+    template<typename T1, typename T2>
+    static std::vector<T1> getKeys(const std::map<T1, T2>& map) {
+        std::vector<T1> result;
+    
+        for(auto& item: map)
+            result.push_back(item.first);
+        return result;
+    }
+    
+    template<typename T1, typename T2>
+    static std::vector<T2> getValues(const std::map<T1, T2>& map) {
+        std::vector<T2> result;
+    
+        for(auto& item: map)
+            // second is unique_ptr, so we need move()
+            // check if this is correct for all the cases
+            result.push_back(move(item.second));
+        return result;
+    }
     
     template<class T>
     static bool sameTwoVectors(std::vector<T> first, std::vector<T> second);
     
     template<class T>
-    static std::string to_string(std::map<T, int>& m);
+    static std::string to_string(const std::map<T, int>& m)
+    {
+        return to_string(&m);
+    }
     
     template<class T>
-    static std::string to_string(std::map<T, int>* p);
+    static std::string to_string(const std::map<T, int>* p)
+    {
+        if (p == nullptr) {
+            return "< NULL DB >";
+        }
+        std::string res;
+        if (p->empty()) return "{}";
+        
+        res += "{";
+        for (auto item: *p)
+        {
+            res += item.first;
+            res += ":";
+            res += std::to_string(item.second);
+            res += ",";
+        }
+        res = res.substr(0, res.size()-1);
+        res += "}";
+        return res;
+    }
     
     template <class T>
     static void print(const std::vector<T>* vectorArray);
@@ -110,6 +153,12 @@ public:
     
     template <class T>
     static void print(T* array, int size);
+    
+    template<class T>
+    static void print(T* object)
+    {
+        std::cout << object->to_string() << std::endl;
+    }
     
     static void printByteStream(const std::vector<unsigned char>& input);
     

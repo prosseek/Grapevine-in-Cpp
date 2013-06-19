@@ -22,7 +22,7 @@ class GroupContextSummaryTest : public QuickTest {
      virtual void SetUp() {
          QuickTest::SetUp();
          
-         g = new GroupContextSummary(101, &groupDb);
+         g = new GroupContextSummary(101, groupDb);
          //g2 = new GroupContextSummary(1, &this->m);
      }
 

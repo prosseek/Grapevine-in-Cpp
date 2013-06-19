@@ -10,12 +10,24 @@
 class ContextSummary {
     int id;
     int hops;
-    std::map<std::string, int>* db;
+    std::map<std::string, int> db;
     std::time_t timestamp;
     
 public:
     ContextSummary();
-    ContextSummary(int id, std::map<std::string, int>* db = nullptr, int hops = 3, std::time_t timestamp = 0);
+    ContextSummary(int id, int hops = 3, std::time_t timestamp = 0)
+    {
+        // create null map and send it
+        std::map<std::string, int> m;
+        ContextSummary(id, m, hops, timestamp);
+    }
+    ContextSummary(int id, const std::map<std::string, int>& db, int hops = 3, std::time_t timestamp = 0)
+    {
+        this->id = id;
+        this->db = db;
+        this->hops = hops;
+        this->timestamp = timestamp;
+    }
     ContextSummary(const ContextSummary& other);
     ContextSummary& operator=(const ContextSummary& other);
     
@@ -25,7 +37,7 @@ public:
     /**
      *   size() returns the elements in this->db
      */
-    int size() { return db->size();}
+    int size() { return db.size();}
     
     /**
      * keySet() returns the vector string that contains all the keys in this->db
@@ -50,12 +62,22 @@ public:
     /**
      * get(key) returns the value from the db
      */
-    bool get(std::string key, int& result) const;
+    //bool get(const std::string& key, int& result);
+    bool get(const std::string& key, int& result) const
+    {
+        //assert (db != NULL);
+        bool contained = containsKey(key);
+        if (contained == true) {
+            result = db.at(key); // [key];
+            return true;
+        }
+        return false;
+    }
     
     /**
      * put(key, val) sets the db[key] into val
      */
-    void put(std::string key, int value);
+    void put(const std::string& key, int value);
     
     bool containsKey(std::string key) const;
     void remove(std::string key);

@@ -23,11 +23,11 @@ class GroupUtilsTest : public QuickTest {
  protected:
   virtual void SetUp() {
       QuickTest::SetUp();
-      summary = new ContextSummary(1, &db);
-      summary2 = new ContextSummary(2, &db2);
-      summary3 = new ContextSummary(3, &db3);
-      groupSummary = new GroupContextSummary(101, &groupDb);
-      groupSummaryNull = new GroupContextSummary(100, &groupDbNull);
+      summary = new ContextSummary(1, db);
+      summary2 = new ContextSummary(2, db2);
+      summary3 = new ContextSummary(3, db3);
+      groupSummary = new GroupContextSummary(101, groupDb);
+      groupSummaryNull = new GroupContextSummary(100, groupDbNull);
   }
   
   virtual void TearDown() {
