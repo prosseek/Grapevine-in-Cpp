@@ -2,10 +2,11 @@
 #define __CONTEXT_SHIMMED_DATAGRAM_SOCKET_H__
 
 class ContextShimmedDatagramSocket
-{
+{   
 public:
-    ContextShimmedDatagramSocket()
-    {}
+    ContextShimmedDatagramSocket() {
+        
+    }
 };
 
 // from socket import *

@@ -27,6 +27,7 @@ class ContextShimTest : public QuickTest {
   
   virtual void TearDown() {
       delete shim;
+      ContextHandler::resetContextHandler();
       QuickTest::TearDown();
   }
   ContextShim* shim;
