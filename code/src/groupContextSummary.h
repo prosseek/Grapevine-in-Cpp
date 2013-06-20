@@ -20,7 +20,6 @@ public:
     GroupContextSummary(const GroupContextSummary& other) : \
         ContextSummary(other) {}
     GroupContextSummary() : GroupContextSummary(-1) {
-        // GroupContextSummary(-1); // , db, hops, timestamp);
     }
         
     std::string to_string() const

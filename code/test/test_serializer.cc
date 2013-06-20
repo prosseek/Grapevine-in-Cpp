@@ -126,7 +126,7 @@ TEST_F(SerializerTest, readObjectDataString) {
     vector<unsigned char> input {0,0,0,c,'H', 'e','l','l','o',',',' ','w','o','r','l','d'};
 
     string res;
-    s->readObjectData(input, res);
+    s->readObjectData(input, res, expected.size());
     EXPECT_EQ(res, expected);
 }
 

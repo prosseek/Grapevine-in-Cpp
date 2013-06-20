@@ -7,10 +7,3 @@ class Error : public std::runtime_error
       : std::runtime_error(message)
     {}
 };
-
-// int value()
-// {
-//     std::stringstream ss;
-//     ss << "Issues at " << __FILE__ << " on line " << __LINE__;
-//     throw Error(ss.str());
-// }

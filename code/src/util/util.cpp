@@ -180,37 +180,6 @@ bool Util::sameTwoVectors(std::vector<T> first, std::vector<T> second)
 template bool Util::sameTwoVectors(std::vector<int> first, std::vector<int> second);
 template bool Util::sameTwoVectors(std::vector<std::string> first, std::vector<std::string> second);
 
-// template<class T>
-// std::string Util::to_string(std::map<T, int>& m)
-// {
-//     return to_string(&m);
-// }
-// template std::string Util::to_string(std::map<std::string, int>& m);
-// template std::string Util::to_string(std::map<int, int>& m);
-// 
-// template<class T>
-// std::string Util::to_string(std::map<T, int>* p)
-// {
-//     if (p == nullptr) {
-//         return "< NULL DB >";
-//     }
-//     std::string res;
-//     if (p->empty()) return "{}";
-//     
-//     res += "{";
-//     for (auto item: *p)
-//     {
-//         res += item.first;
-//         res += ":";
-//         res += std::to_string(item.second);
-//         res += ",";
-//     }
-//     res = res.substr(0, res.size()-1);
-//     res += "}";
-//     return res;
-// }
-// template std::string Util::to_string(std::map<std::string, int>*);
-
 /*
  * DEBUGGING FUNCTIONS : print
  */
@@ -246,18 +215,6 @@ template void Util::print(const std::vector<int>* vectorArray);
 template void Util::print(const std::vector<std::string>* vectorArray);
 template void Util::print(const std::vector<int>& vectorArray);
 template void Util::print(const std::vector<std::string>& vectorArray);
-
-// template <class T>
-// void Util::print(std::vector<T> vectorArray)
-// {
-//     for (auto i = vectorArray.begin(); i != vectorArray.end(); ++i)
-//     {
-//         std::cout << *i << ":";
-//     }
-//     std::cout << std::endl;
-// }
-// template void Util::print(std::vector<int> vectorArray);
-// template void Util::print(std::vector<std::string> vectorArray);
 
 template <class T>
 void Util::print(T* array, int size)

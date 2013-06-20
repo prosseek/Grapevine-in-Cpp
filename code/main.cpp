@@ -7,7 +7,31 @@
 //
 
 #include <iostream>
+#include <map>
+#include <memory>
 #include <gtest/gtest.h>
+
+#include "groupContextSummary.h"
+
+using namespace std;
+
+//http://stackoverflow.com/questions/427589/inspecting-standard-container-stdmap-contents-with-gdb
+//#define SHOW(X) cout << # X " = " << ((X).get()->to_string()) << endl
+
+void testPrint( map<int, unique_ptr<GroupContextSummary>> & m, int i )
+{
+    cout <<  m[i].get()->to_string() << endl;
+  // SHOW( m[i] );
+  // SHOW( m.find(i)->first );
+}
+
+void printVector(const vector<int>& m)
+{
+    for (auto i: m)
+    {
+        cout << i << ":";
+    }
+}
 
 int main(int argc,  char ** argv)
 {

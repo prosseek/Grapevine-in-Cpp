@@ -1,27 +1,118 @@
-class ContextSummarySerializer
+#include "serializer.h"
+#include "contextSummary.h"
+#include "groupContextSummary.h"
+
+#include <typeinfo>
+#include <memory>
+#include <typeinfo>
+
+class ContextSummarySerializer : public Serializer
 {
-public:        
+public:
+    virtual ~ContextSummarySerializer() = default;
+    ContextSummarySerializer() : Serializer("") {};
+    void clearBuffer() 
+    {
+        reset();
+    }
+    
+    vector<unsigned char> getBuffer()
+    {
+        return this->result;
+    }
+    
+    vector<unsigned char> writeSummaries(const vector<ContextSummary*>& summaries)
+    {
+        for (auto& summary: summaries)
+        {
+            this->writeSummary(summary);
+        }
+        return result;
+    }
+    vector<unsigned char> writeSummary(const ContextSummary* summary)
+    {
+        unsigned char summarySignature = 'C';
+        if (typeid(*summary) == typeid(GroupContextSummary)) {
+            summarySignature = 'G';
+        }
+        
+        int uid = summary->getId();
+        int hops = summary->getHops();
+        time_t timestamp = summary->getTimestamp();
+        
+        int dbSize = summary->size();
+        
+        writeObjectData(summarySignature);
+        writeObjectData(uid);
+        writeObjectData(hops);
+        writeObjectData(timestamp);
+        writeObjectData(dbSize);
+        
+        auto keySet = summary->keySet();
+        for (auto& key : keySet)
+        {
+            // int keyLength = key.size();
+            // writeObjectData(keyLength);
+            writeObjectData(key);
+            int result;
+            summary->get(key, result);
+            writeObjectData(result);
+        }
+        return result;
+    }
+    
+    unique_ptr<ContextSummary> readSummary()
+    {
+        unsigned char signature;
+        autoReadObjectData(signature);
+        
+        int uid;
+        autoReadObjectData(uid);
+        int hops;
+        autoReadObjectData(hops);         
+        time_t timestamp;
+        autoReadObjectData(timestamp);
+        int dbSize;
+        autoReadObjectData(dbSize);
+        
+        map<string, int> db;
+        for (int i = 0; i < dbSize; i++)
+        {
+            //int stringLength;
+            string key;
+            autoReadObjectData(key);
+            int value;
+            autoReadObjectData(value);
+            db[key] = value;
+        }
+        
+        ContextSummary* c;
+        if (signature == 'C') {
+            c = new ContextSummary(uid, db, hops, timestamp);
+        } else
+        {
+            c = new GroupContextSummary(uid, db, hops, timestamp);
+        }
+        
+        return unique_ptr<ContextSummary>(c);
+    }
+    
+    vector<unique_ptr<ContextSummary>> readSummaries()
+    {
+        vector<unique_ptr<ContextSummary>> result;
+        int totalBufferLength = size();
+        resetBufferPointer();
+        
+        while (bufferPointer < totalBufferLength)
+        {
+            auto s = readSummary();
+            result.push_back(move(s));
+        }
+        
+        return result;
+    }
 };
 
-// from serializer import *
-// from contextSummary import *
-// from groupContextSummary import *
-// 
-// class ContextSummarySerializer(Serializer):
-//     def __init__(self):
-//         super(ContextSummarySerializer, self).__init__("")
-//         
-//     def clearBuffer(self):
-//         self.result = ""
-//         
-//     def getBuffer(self):
-//         return self.result
-//         
-//     def writeSummaries(self, summaries):
-//         for summary in summaries:
-//             self.writeSummary(summary)
-//         return self.result
-//         
 //     def readSummaries(self, buffer = None):
 //         if buffer is None: 
 //             buffer = self.result
@@ -37,51 +128,6 @@ public:
 //             summaries.append(summary)
 //         #print totalBufferLength, self.bufferPointer
 //         return summaries
-//         
-//     def writeSummary(self, summary):
-//         summarySignature = "C"
-//         if type(summary) is GroupContextSummary:
-//             summarySignature = "G"
-//             
-//         uid = summary.getId()
-//         hops = summary.getHops()
-//         timestamp = summary.getTimestamp()
-//         size = summary.size()
-//         
-//         # def writeObjectData(self, value, type):
-//         self.writeObjectData(summarySignature, "string")
-//         self.writeObjectData(uid, "int")
-//         self.writeObjectData(hops, "int")
-//         self.writeObjectData(timestamp, "timestamp")
-//         self.writeObjectData(size, "int")
-//         
-//         for key in summary.keySet():
-//             #print key
-//             #print summary.get(key)
-//             self.writeObjectData(len(key), "int")
-//             self.writeObjectData(key, "string")
-//             self.writeObjectData(summary.get(key), "int")
-//         
-//         return self.result
-//         
-//     def readSummary(self): # , type):
-//         # __init__(self, uid, db, hops = 3, tau = 3, timestamp = None):
-//         signature = self.autoReadObjectData("string1")
-//         uid = self.autoReadObjectData("int")
-//         hops = self.autoReadObjectData("int")
-//         timestamp = self.autoReadObjectData("timestamp")
-//         dbsize = self.autoReadObjectData("int")
-//         db = {}
-//         for i in range(dbsize):
-//             stringLength = self.autoReadObjectData("int")
-//             key = self.autoReadObjectData("string%d" % stringLength)
-//             value = self.autoReadObjectData("int")
-//             db[key] = value
-//             
-//         if signature == "G":
-//             summary = GroupContextSummary(uid, db, hops, timestamp)
-//         else:
-//             summary = ContextSummary(uid, db, hops, timestamp)
-//         #print summary
-//         return summary
+
+
     

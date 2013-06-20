@@ -8,6 +8,7 @@
 using namespace std;
 
 class Serializer {
+protected:
     int bufferPointer = 0;
     vector<unsigned char> result;
     string tempResultInString;
@@ -82,6 +83,12 @@ public:
         this->result.insert(this->result.end(), temp.begin(), temp.end());
     }
     
+    void writeObjectData(unsigned char value) // , string typeName)
+    {
+        vector<unsigned char> temp {value};
+        this->result.insert(this->result.end(), temp.begin(), temp.end());
+    }
+    
     void writeObjectData(string value)
     {
         int length = value.size();
@@ -105,13 +112,18 @@ public:
         result = byteArrayToInt(buffer);
     }
     
-    void readObjectData(const vector<unsigned char>& buffer, string& result)
+    void readObjectData(const vector<unsigned char>& buffer, unsigned char& result)
+    {
+        result = buffer[0]; // (buffer);
+    }
+    
+    void readObjectData(const vector<unsigned char>& buffer, string& result, int length)
     {
         // extract the size of string length encoded in 4 bytes
-        std::vector<unsigned char>  sub(&buffer[0], &buffer[4]);
-        int length = byteArrayToInt(sub);
+        // std::vector<unsigned char>  sub(&buffer[0], &buffer[4]);
+        // int length = byteArrayToInt(sub);
         
-        std::vector<unsigned char>  sub2(&buffer[4], &buffer[4 + length]);
+        std::vector<unsigned char>  sub2(&buffer[0], &buffer[   length]);
         result = byteArrayToString(sub2);
     }
     
@@ -120,39 +132,91 @@ public:
         result = byteArrayToTimestamp(buffer);
     }
     
-    // template<typename T>
-    // T autoReadObjectData(string type)
-    // {
-    //     
-    // }
-    // // def autoReadObjectData(self, type):
-    // //     if type == "int":
-    // //         length = 4
-    // //     elif type.startswith("string"): # input is string5 or something
-    // //         length = int(type[len("string"):])
-    // //         type = "string"
-    // //     elif type == "timestamp":
-    // //         # 13 is the string length converted from time.time()
-    // //         length = 13 # len(buffer)
-    // //     else:
-    // //         print >> sys.stderr, "***" + type + "***"
-    // //         raise Exception("only int/string/timestamp allowed")
-    // //         
-    // //     buffer = self.result[self.bufferPointer:self.bufferPointer + length]
-    // //     result = self.readObjectData(buffer, type)
-    // //     #print result
-    // //     self.bufferPointer += length
-    // //     return result
-    // // 
-    
     void reset()
     {
         result.clear();
+        resetBufferPointer();
+    }
+    
+    void resetBufferPointer()
+    {
         bufferPointer = 0;
     }
 
     int size()
     {
         return this->result.size();
+    }
+    
+    // http://stackoverflow.com/questions/421573/best-way-to-extract-a-subvector-from-a-vector
+    // vector<T>::const_iterator first = myVec.begin() + 100000;
+    // vector<T>::const_iterator last = myVec.begin() + 101000;
+    // vector<T> newVec(first, last);
+    void autoReadObjectData(string& result)
+    {
+        // 1. read integer first
+        int startPointer = bufferPointer;
+        int endPointer = bufferPointer + sizeof(int);
+        auto first = this->result.begin() + startPointer;
+        auto last = this->result.begin() + endPointer;
+        vector<unsigned char> unsignedCharBuffer(first, last);
+        int length;
+        readObjectData(unsignedCharBuffer, length);
+        
+        startPointer = endPointer;
+        endPointer = startPointer + length;
+        first = this->result.begin() + startPointer;
+        last = this->result.begin() + endPointer;
+        vector<unsigned char> unsignedCharBuffer2(first, last); 
+        
+        string value;
+        readObjectData(unsignedCharBuffer2, value, length);
+        result = value;
+        bufferPointer = endPointer;
+    }
+    
+    void autoReadObjectData(unsigned char& result)
+    {
+        unsigned char value;
+        
+        int startPointer = bufferPointer;
+        int endPointer = bufferPointer + 1;
+        auto first = this->result.begin() + startPointer;
+        auto last = this->result.begin() + endPointer;
+        
+        vector<unsigned char> unsignedCharBuffer(first, last); 
+        readObjectData(unsignedCharBuffer, value);
+        result = value;
+        bufferPointer = endPointer;
+    }
+    
+    void autoReadObjectData(int& result) 
+    {
+        int value;
+        
+        int startPointer = bufferPointer;
+        int endPointer = bufferPointer + sizeof(int);
+        auto first = this->result.begin() + startPointer;
+        auto last = this->result.begin() + endPointer;
+        
+        vector<unsigned char> unsignedCharBuffer(first, last); 
+        readObjectData(unsignedCharBuffer, value);
+        result = value;
+        bufferPointer = endPointer;
+    }
+        
+    void autoReadObjectData(time_t& result)
+    {
+        int value;
+        
+        int startPointer = bufferPointer;
+        int endPointer = bufferPointer + sizeof(time_t);
+        auto first = this->result.begin() + startPointer;
+        auto last = this->result.begin() + endPointer;
+        
+        vector<unsigned char> unsignedCharBuffer(first, last); 
+        readObjectData(unsignedCharBuffer, value);
+        result = value;
+        bufferPointer = endPointer;
     }
 };

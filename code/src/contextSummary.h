@@ -31,18 +31,7 @@ public:
         this->timestamp = other.timestamp;
         this->db = other.db;
     }
-    
-    // ContextSummary(int id, int hops = 3, std::time_t timestamp = 0) : 
-    //     ContextSummary(id, {}, hops, timestamp)
-    // {
-    //     // // create null map and send it
-    //     // std::map<std::string, int> m;
-    //     // // ContextSummary(id, m, hops, timestamp);
-    //     // this->id = id;
-    //     // this->db = m;
-    //     // this->hops = hops;
-    //     // this->timestamp = timestamp;
-    // }
+
     ContextSummary(int id, const std::map<std::string, int>& db = {}, int hops = 3, std::time_t timestamp = 0)
     {
         this->id = id;
@@ -59,21 +48,23 @@ public:
     /**
      *   size() returns the elements in this->db
      */
-    int size() { return db.size();}
+    int size() const { return db.size();}
     
     /**
      * keySet() returns the vector string that contains all the keys in this->db
      */
-    std::vector<std::string> keySet();
+    std::vector<std::string> keySet() const;
     
     std::time_t getTimestamp() const {return this->timestamp;}
     void setTimestamp(std::time_t timestamp) {this->timestamp = timestamp;}
     
-    int getHops() {return this->hops;}
+    int getHops() const {return this->hops;}
     int setHops(int hops) {this->hops = hops; return hops;}
     
     int getId() const {return this->id;}
     void setId() {this->id = id;}
+    
+    std::map<std::string, int> getDb() const {return this->db;}
     
     /**
      * to_string() returns a string format for ContextSummary object

@@ -1,8 +1,11 @@
+#include "contextHandler.h"
+
 class ContextShim {
+    ContextHandler* h;
 public:
     ContextShim()
     {
-        
+        h = ContextHandler::getInstance();
     }
 };
     // def __init__(self):
