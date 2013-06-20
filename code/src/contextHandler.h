@@ -1,3 +1,6 @@
+#ifndef __CONTEXT_HANDLER_H__
+#define __CONTEXT_HANDLER_H__
+
 #include <cstddef>
 #include <map>
 #include <vector>
@@ -6,6 +9,7 @@
 #include "groupDefinition.h"
 #include "contextSummary.h"
 #include "grapevine.h"
+
 
 class ContextHandler {
     // """
@@ -323,19 +327,19 @@ public:
         return unique_ptr<ContextSummary>(reinterpret_cast<ContextSummary*>(NULL));
     }
     
-    vector<unique_ptr<ContextSummary>> getSummariesToSend()
+    vector<ContextSummary*> getSummariesToSend()
     {
-        vector<unique_ptr<ContextSummary>> result;
+        vector<ContextSummary*> result;
         
         if (getMyContext() != NULL) {
-            result.push_back(unique_ptr<ContextSummary>(new ContextSummary(*getMyContext())));
+            result.push_back(getMyContext()); // unique_ptr<ContextSummary>(new ContextSummary(*getMyContext())));
         }
         
         for (auto& groupSummary: groupContextSummaries)
         {
-            auto summaryPointer = groupSummary.second.get();
+            GroupContextSummary* summaryPointer = groupSummary.second.get();
             //auto uniquePtr = unique_ptr<GroupContextSummary>(new GroupContextSummary(*summaryPointer));
-            result.push_back(unique_ptr<GroupContextSummary>(new GroupContextSummary(*summaryPointer)));
+            result.push_back(summaryPointer); 
         }
         
         for (auto& summary: receivedSummaries)
@@ -343,12 +347,11 @@ public:
             int hops = summary.second->getHops();
             if (hops < this->tau)
             {
-                auto summaryPointer = summary.second.get();
+                ContextSummary* summaryPointer = summary.second.get();
                 //auto uniquePtr = unique_ptr<GroupContextSummary>(new GroupContextSummary(*summaryPointer));
-                result.push_back(unique_ptr<ContextSummary>(new ContextSummary(*summaryPointer)));
+                result.push_back(summaryPointer); // unique_ptr<ContextSummary>(new ContextSummary(*summaryPointer)));
             }
         }
-        
         return result;
     }
     
@@ -382,3 +385,4 @@ public:
 //         if groupSummary is not None:
 //             return groupSummary.getGroupCopy()
 //         return None
+#endif

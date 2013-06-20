@@ -1,3 +1,6 @@
+#ifndef __CONTEXT_SUMMARY_SERIALIZER_H__
+#define __CONTEXT_SUMMARY_SERIALIZER_H__
+
 #include "serializer.h"
 #include "contextSummary.h"
 #include "groupContextSummary.h"
@@ -113,21 +116,5 @@ public:
     }
 };
 
-//     def readSummaries(self, buffer = None):
-//         if buffer is None: 
-//             buffer = self.result
-//         else:
-//             self.result = buffer
-//             
-//         totalBufferLength = len(buffer)
-//         
-//         summaries = []
-//         self.resetBufferPointer()
-//         while self.bufferPointer < totalBufferLength:
-//             summary = self.readSummary()
-//             summaries.append(summary)
-//         #print totalBufferLength, self.bufferPointer
-//         return summaries
-
-
+#endif
     

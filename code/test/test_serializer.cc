@@ -123,8 +123,8 @@ TEST_F(SerializerTest, readObjectDataString) {
     s = new Serializer();
     string expected = "Hello, world";
     unsigned char c = static_cast<unsigned char>(expected.size());
-    vector<unsigned char> input {0,0,0,c,'H', 'e','l','l','o',',',' ','w','o','r','l','d'};
-
+    //vector<unsigned char> input {0,0,0,c,'H', 'e','l','l','o',',',' ','w','o','r','l','d'};
+    vector<unsigned char> input {'H', 'e','l','l','o',',',' ','w','o','r','l','d'};
     string res;
     s->readObjectData(input, res, expected.size());
     EXPECT_EQ(res, expected);
@@ -146,14 +146,3 @@ TEST_F(SerializerTest, size) {
     
     EXPECT_EQ(10, res);
 }
-
-// TEST_F(SerializerTest, autoReadObjectData) {
-//     s = new Serializer("12113231312");
-//     //string buffer = "123"; // this should have been 0x320x32...
-//     int res = s->autoReadObjectData<int>("int");
-//     
-//     cout << res << endl;
-//     int expected = 4;
-//     EXPECT_EQ(res, expected);
-//     // then other tests. 
-// }

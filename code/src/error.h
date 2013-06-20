@@ -1,3 +1,6 @@
+#ifndef __END_H__
+#define __END_H__
+
 #include <stdexcept>
 
 class Error : public std::runtime_error
@@ -7,3 +10,5 @@ class Error : public std::runtime_error
       : std::runtime_error(message)
     {}
 };
+
+#endif

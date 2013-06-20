@@ -1,26 +1,40 @@
+#ifndef __CONTEXT_SHIM_H__
+#define __CONTEXT_SHIM_H__
+
 #include "contextHandler.h"
+#include "contextSummarySerializer.h"
 
 class ContextShim {
     ContextHandler* h;
+    ContextSummarySerializer* s;
 public:
     ContextShim()
     {
+        s = new ContextSummarySerializer();
         h = ContextHandler::getInstance();
     }
+    
+    ~ContextShim()
+    {
+        delete s;
+    }
+    
+    ContextHandler* getContextHandlerPtr() {return h;}
+    
+    vector<unsigned char> getContextBytes()
+    {
+        vector<ContextSummary*> summaries = h->getSummariesToSend();
+        s->clearBuffer();
+        vector<unsigned char> result = s->writeSummaries(summaries);
+        return result;
+    }
+    
+    void processContextBytes()
+    {
+        
+    }
 };
-    // def __init__(self):
-    //     self.contextHandler = ContextHandler.getInstance()
-    //     self.serializer =  ContextSummarySerializer()
-    //     
-    // def getContextHandler(self):
-    //     return self.contextHandler
-    //     
-    // def getContextBytes(self):
-    //     summaries = self.contextHandler.getSummariesToSend()
-    //     self.serializer.clearBuffer()
-    //     result = self.serializer.writeSummaries(summaries)
-    //     return result
-    //     
+
     // def processContextBytes(self, buffer):
     //     """
     //     When it processes ContextBytes, it uses handleIncomingSummaries,
@@ -39,3 +53,4 @@ public:
     //     summaries = self.serializer.readSummaries(buffer)
     //     self.contextHandler.handleIncomingSummaries(summaries)
     //     return summaries
+#endif

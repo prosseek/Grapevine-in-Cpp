@@ -85,9 +85,4 @@ TEST_F(ContextSummarySerializerTest, writeSummariesReadSummaries) {
         EXPECT_TRUE(*s2 == *(s.get()));
         i++;
     }
-    // auto s2 = recoveredSummary.get();
-    // EXPECT_TRUE(s->getId() == s2->getId());
-    // EXPECT_TRUE(s->getHops() == s2->getHops());
-    // EXPECT_TRUE(s->getTimestamp() == s2->getTimestamp());
-    // EXPECT_TRUE(s->getDb() == s2->getDb());
 }

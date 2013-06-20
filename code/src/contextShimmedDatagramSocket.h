@@ -1,3 +1,6 @@
+#ifndef __CONTEXT_SHIMMED_DATAGRAM_SOCKET_H__
+#define __CONTEXT_SHIMMED_DATAGRAM_SOCKET_H__
+
 class ContextShimmedDatagramSocket
 {
 public:
@@ -49,3 +52,4 @@ public:
 //         #print sendPacket
 //         self.cs.sendto(sendPacket, (self.addr, self.port))
 //     
+#endif

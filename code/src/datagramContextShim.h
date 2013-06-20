@@ -1,3 +1,6 @@
+#ifndef __DATAGRAM_CONTEXT_SHIM_H__
+#define __DATAGRAM_CONTEXT_SHIM_H__
+
 class DatagramContextShim
 {
 public:
@@ -46,3 +49,4 @@ public:
 //     sys.path.append("../test")
 //     from testDatagramContextShim import *
 //     unittest.main(verbosity=2)
+#endif
