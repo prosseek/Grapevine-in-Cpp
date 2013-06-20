@@ -21,6 +21,9 @@ public:
     
     ContextHandler* getContextHandlerPtr() {return h;}
     
+    /* from the summaries from handler
+     * get the serialized data stored in result buffer
+     */
     vector<unsigned char> getContextBytes()
     {
         vector<ContextSummary*> summaries = h->getSummariesToSend();
@@ -29,9 +32,13 @@ public:
         return result;
     }
     
-    void processContextBytes()
+    /* assume that the buffer is filled, 
+     * it transforms the buffer content into summaries
+     */
+    vector<unique_ptr<ContextSummary>> processContextBytes() // const vector<unsigned char>& buffer)
     {
-        
+        vector<unique_ptr<ContextSummary>> summaries = s->readSummaries();
+        return summaries;
     }
 };
 

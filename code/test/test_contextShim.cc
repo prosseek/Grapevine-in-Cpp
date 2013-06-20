@@ -5,6 +5,7 @@
 #include <map>
 #include <string>
 
+#include "util.h"
 #include "contextHandler.h"
 #include "contextShim.h"
 
@@ -19,21 +20,20 @@ class QuickTest : public testing::Test {
 class ContextShimTest : public QuickTest {
  protected:
   virtual void SetUp() {
-      s = new ContextShim();
-      h = s->getContextHandlerPtr();
+      shim = new ContextShim();
+      h = shim->getContextHandlerPtr();
       QuickTest::SetUp();
   }
   
   virtual void TearDown() {
-      delete s;
+      delete shim;
       QuickTest::TearDown();
   }
-  ContextShim* s;
+  ContextShim* shim;
   ContextHandler* h;
 };
 
-
-TEST_F(ContextShimTest, getContextBytes) {
+TEST_F(ContextShimTest, getContextBytes_and_processContextBytes) {
     std::map<std::string, int> dbx {
           {"GroupsEnumerated",3},
           {"Group0",100},{"Group1",103},{"Group2",104},
@@ -61,9 +61,19 @@ TEST_F(ContextShimTest, getContextBytes) {
     summaryMap[1] = unique_ptr<ContextSummary>(summaryA);
     summaryMap[2] = unique_ptr<ContextSummary>(summaryB);
     h->moveReceivedSummaries(summaryMap);
+    h->addGroupDefinition(100);
         
-    // make group 100
-    // h->addGroupDefinition(100);
+    auto res = shim->getContextBytes();
+    // Util::print(res);
+
+    auto summaries = shim->processContextBytes();
+    // for (auto& s : summaries)
+    // {
+    //     cout << s.get()->to_string();
+    // }
+    // two summaries are processed - 11 and 100
+    // (11)[10]:{Group0:100,Group1:103,Group2:104,GroupsEnumerated:3,Id0:10,Id1:20,Id2:30,IdsAggregated:3}-(100000)(100)[3]:{Member0:11,Member1:1,Member2:2,MembersEnumerated:3}-(0)
+    EXPECT_TRUE(summaries.size() == 2);
 }
 
 TEST_F(ContextShimTest, processContextBytes) {

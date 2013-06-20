@@ -100,7 +100,12 @@ public:
         return unique_ptr<ContextSummary>(c);
     }
     
-    vector<unique_ptr<ContextSummary>> readSummaries()
+    // vector<unique_ptr<ContextSummary>> readSummaries()
+    // {
+    //     return readSummaries(this->result);
+    // }    
+    // 
+    vector<unique_ptr<ContextSummary>> readSummaries() //const vector<unsigned char>& buffer)
     {
         vector<unique_ptr<ContextSummary>> result;
         int totalBufferLength = size();
