@@ -5,6 +5,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "groupUtils.h"
 #include "contextSummary.h"
@@ -211,4 +212,121 @@ TEST_F(ContextHandlerTest, performGroupFormations) {
     // calls performGroupFormations
 }
 
+TEST_F(ContextHandlerTest, moveGroupDefinitions) {
+    auto g = new GroupDefinition(100);
+    map<int, unique_ptr<GroupDefinition>> gd;
+    gd[100] = unique_ptr<GroupDefinition>(g);
+    h->moveGroupDefinitions(gd);
+    auto g2 = h->getGroupDefinition(100);
+    EXPECT_TRUE(g2->getId() == 100);
+}
 
+TEST_F(ContextHandlerTest, updateLocalSummaryByMoving) {
+    std::map<std::string, int> db {
+           {"GroupsEnumerated",3},
+           {"Group0",100},{"Group1",101},{"Group2",102},
+           {"IdsAggregated",5},
+           {"Id0",10}, {"Id1",20}, {"Id2",30}, {"Id3",40}, {"Id4",50}};
+    ContextSummary* summary = new ContextSummary(1, db);
+    
+    h->moveMyContext(summary);
+    
+    auto c = h->getMyContext();
+    EXPECT_TRUE(c->getId() == 1);
+    
+    std::map<std::string, int> db2 {
+          {"GroupsEnumerated",3},
+          {"Group0",100},{"Group1",103},{"Group2",104},
+          {"IdsAggregated",3},
+          {"Id0",10}, {"Id1",20}, {"Id2",30}};
+    ContextSummary* summary2 = new ContextSummary(2, db2);
+    h->updateLocalSummaryByMoving(summary2);
+    
+    c = h->getMyContext();
+    EXPECT_TRUE(c->getId() == 2);
+    // TODO
+    // for (auto& groupDefiniton: groupDefinitions)
+    // {
+    // This part is not tested.
+}
+
+TEST_F(ContextHandlerTest, removeLocalSummary) {
+    std::map<std::string, int> db {
+           {"GroupsEnumerated",3},
+           {"Group0",100},{"Group1",101},{"Group2",102},
+           {"IdsAggregated",5},
+           {"Id0",10}, {"Id1",20}, {"Id2",30}, {"Id3",40}, {"Id4",50}};
+    ContextSummary* summary = new ContextSummary(1, db);
+    
+    h->moveMyContext(summary);
+    auto c = h->getMyContext();
+    EXPECT_TRUE(c->getId() == 1);
+    
+    h->removeLocalSummary();
+    c = h->getMyContext();
+    EXPECT_TRUE(c == NULL);
+}
+
+TEST_F(ContextHandlerTest, handleIncomingSummaries) {
+    std::map<std::string, int> dbx {
+          {"GroupsEnumerated",3},
+          {"Group0",100},{"Group1",103},{"Group2",104},
+          {"IdsAggregated",3},
+          {"Id0",10}, {"Id1",20}, {"Id2",30}};
+    ContextSummary* s = new ContextSummary(11, dbx, 10, 100000);   // pretty short hops
+    h->moveMyContext(s);
+    
+    // 1. setup the existing summary
+    std::map<std::string, int> dba1 {
+          {"GroupsEnumerated",3},
+          {"Group0",100},{"Group1",103},{"Group2",104},
+          {"IdsAggregated",3},
+          {"Id0",10}, {"Id1",20}, {"Id2",30}};
+    ContextSummary* summaryA = new ContextSummary(1, dba1, 10, 100000);   // pretty short hops
+    
+    std::map<std::string, int> dba2 {
+          {"GroupsEnumerated",3},
+          {"Group0",100},{"Group1",103},{"Group2",104},
+          {"IdsAggregated",3},
+          {"Id0",10}, {"Id1",20}, {"Id2",30}};
+    ContextSummary* summaryB = new ContextSummary(2, dba2, 10, 100000);   // pretty long hops
+    
+    std::map<int, unique_ptr<ContextSummary>> summaryMap;
+    summaryMap[1] = unique_ptr<ContextSummary>(summaryA);
+    summaryMap[2] = unique_ptr<ContextSummary>(summaryB);
+    h->moveReceivedSummaries(summaryMap);
+    
+    // setup the incomming summaries
+    std::map<std::string, int> db1 {
+          {"GroupsEnumerated",3},
+          {"Group0",100},{"Group1",103},{"Group2",104},
+          {"IdsAggregated",3},
+          {"Id0",10}, {"Id1",20}, {"Id2",30}};
+    ContextSummary* summary1 = new ContextSummary(1, db2, 1, 100005);   // new time <- select
+    
+    std::map<std::string, int> db2 {
+          {"GroupsEnumerated",3},
+          {"Group0",100},{"Group1",103},{"Group2",104},
+          {"IdsAggregated",3},
+          {"Id0",10}, {"Id1",20}, {"Id2",30}};
+    ContextSummary* summary2 = new ContextSummary(2, db2, 2, 100000);   // short hops <- select
+    
+    std::vector<unique_ptr<ContextSummary>> receivedSummaries;
+    receivedSummaries.push_back(unique_ptr<ContextSummary>(summary1));
+    receivedSummaries.push_back(unique_ptr<ContextSummary>(summary2));
+    
+    // make group 100
+    h->addGroupDefinition(100);
+    
+    // only summary 1 should be updated
+    h->handleIncomingSummaries(receivedSummaries);
+    // auto g1 = h->get(1);
+    // auto g2 = h->get(2);
+    // 
+    // cout << g1->getHops(); 
+    // cout << g2->getHops(); 
+    // EXPECT_TRUE(g1->getHops() == 2);
+    // EXPECT_TRUE(g2->getHops() == 3);
+    //TODO
+    // Need more tests with strategy
+}

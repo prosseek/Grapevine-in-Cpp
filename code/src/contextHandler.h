@@ -260,10 +260,15 @@ public:
             myContext.reset();
     }
     
-    void updateLocalSummary(ContextSummary& summary)
+    void updateLocalSummaryByMoving(ContextSummary* summary)
+    {
+        return updateLocalSummaryByMoving(*summary);
+    }    
+    
+    void updateLocalSummaryByMoving(ContextSummary& summary)
     {
         // from summary, deepcopy the object 
-        removeLocalSummary();
+        //removeLocalSummary();
         this->myContext = unique_ptr<ContextSummary>(new ContextSummary(summary));
         
         for (auto& groupDefiniton: groupDefinitions)
@@ -276,7 +281,7 @@ public:
         }
     }
     
-    void handleIncomingSummaries(vector<unique_ptr<ContextSummary>> summaries)
+    void handleIncomingSummaries(const vector<unique_ptr<ContextSummary>>& summaries)
     {
         vector<unique_ptr<ContextSummary>> summariesToPut;
         auto myContext = getMyContext();
@@ -300,7 +305,7 @@ public:
                 summariesToPut.push_back(unique_ptr<ContextSummary>(new ContextSummary(*summary)));
             }
         }
-        performGroupFormations(groupDefinitions, summariesToPut);
+        performGroupFormations(this->groupDefinitions, summariesToPut);
     }
     
     // Don't forget that get returns pointer. 
