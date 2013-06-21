@@ -53,6 +53,7 @@ set(grapevine_srcs
     test/test_groupUtils.cc
     test/test_error.cc
     test/test_serializerUtils.cc
+    test/test_network_broadcasting.cc
     )
     
 add_executable(gv ${grapevine_srcs})

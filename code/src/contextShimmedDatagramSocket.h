@@ -1,11 +1,94 @@
 #ifndef __CONTEXT_SHIMMED_DATAGRAM_SOCKET_H__
 #define __CONTEXT_SHIMMED_DATAGRAM_SOCKET_H__
 
+#include <iostream>
+#include <memory>
+#include <sys/types.h> 
+
+#include <string.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <thread>
+
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
+#include <cassert>
+
+#include "datagramContextShim.h"
+
+using namespace std;
+
 class ContextShimmedDatagramSocket
 {   
+    const int bufferSize = 1024;
+    char* buffer; // [bufferSize];
+    int sock;
+    sockaddr_in addr;
+    DatagramContextShim* shim;
 public:
-    ContextShimmedDatagramSocket() {
+    ~ContextShimmedDatagramSocket()
+    {
+        delete buffer;
+        delete shim;
+    }
+    ContextShimmedDatagramSocket(string ad, int port) {
+        buffer = new char[bufferSize];
+        shim = new DatagramContextShim();
         
+        memset(&addr, 0, sizeof(addr));
+        addr.sin_family = AF_INET;
+        addr.sin_port = htons(port);
+        addr.sin_addr.s_addr = inet_addr(ad.c_str());
+        
+        assert((sock=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))!=-1);
+    }
+    
+    vector<unsigned char> getSendPacket(const vector<unsigned char>& payLoad)
+    {
+        return shim->getSendPacket(payLoad);
+    }
+    pair<vector<unsigned char>, vector<unique_ptr<ContextSummary>>> receive()
+    {
+        if (bind(sock, (struct sockaddr*)&addr, sizeof(addr)) == -1)
+        {
+            perror("Bind error");
+        } 
+        
+        // Send the message after the bind     
+        //pinger("hello");
+            
+        socklen_t len = sizeof addr;
+        if(recvfrom(sock, buffer, bufferSize, 0, (struct sockaddr*)&addr, &len)==-1)
+            perror("recvfrom");
+                
+        //cout << "\nRECEIVE" << buffer; 
+                
+        if(close(sock) == -1)
+            perror("close");
+    }
+    
+    int send(const string& payLoad)
+    {
+        vector<unsigned char> buffer;
+        Util::stringToByteArray(payLoad, buffer);
+        return send(buffer);
+    }
+    
+    int send(const vector<unsigned char>& payLoad)
+    {
+        int broadcast=1;
+        setsockopt(sock, SOL_SOCKET, SO_BROADCAST,
+                    &broadcast, sizeof broadcast);
+                    
+        vector<unsigned char> sendPacket = getSendPacket(payLoad);
+        string buffer;
+        Util::byteArrayToString(sendPacket, buffer);
+        // sendto(sendPacket, (self.addr, self.port));
+        int bytes_sent = sendto(sock, buffer.c_str(), sizeof(buffer.c_str()), 0,
+                   (struct sockaddr*)&addr, sizeof(addr));
+       return bytes_sent;
     }
 };
 
@@ -23,9 +106,6 @@ public:
 //         self.cs.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
 //         self.cs.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
 //         
-//     def getSendPacket(self, payload):
-//         return self.shim.getSendPacket(payload)
-//         
 //     def receive(self):
 //         cs = socket(AF_INET, SOCK_DGRAM)
 //         try:
@@ -36,21 +116,10 @@ public:
 //             raise
 //             cs.blocking(0)
 // 
-//         #cs.bind(('192.168.65.255', port))
 //         data = cs.recvfrom(1024) # get 1024 bytes first
 //         cs.close()
-//         #print data
-//         #print len(data[0])
+
 //         payload, summaries = self.shim.processReceivedPacket(data[0])
-//         #print payload
-//         #print summaries
 //         return (payload, summaries)
-//         #print res
-//         
-//     def send(self, payload):
-//         # get the sendpacket
-//         sendPacket = self.getSendPacket(payload)
-//         #print sendPacket
-//         self.cs.sendto(sendPacket, (self.addr, self.port))
-//     
+
 #endif

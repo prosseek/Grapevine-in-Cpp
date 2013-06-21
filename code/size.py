@@ -14,7 +14,7 @@ p2 = Popen(["xargs", "wc"], stdin=p1.stdout, stdout=PIPE)
 p1.stdout.close()  # Allow p1 to receive a SIGPIPE if p2 exits.
 output = p2.communicate()[0]
 res = output.split('\n')[-2]
-print res
+print "test  :" + res
 a1 =  res.split(' ')[4]
 a1 = int(a1.strip())
 
@@ -23,7 +23,7 @@ p2 = Popen(["xargs", "wc"], stdin=p1.stdout, stdout=PIPE)
 p1.stdout.close()  # Allow p1 to receive a SIGPIPE if p2 exits.
 output = p2.communicate()[0]
 res = output.split('\n')[-2]
-print res
+print "header:" + res
 a2 =  res.split(' ')[4]
 a2 = int(a2.strip())
 
@@ -32,7 +32,7 @@ p2 = Popen(["xargs", "wc"], stdin=p1.stdout, stdout=PIPE)
 p1.stdout.close()  # Allow p1 to receive a SIGPIPE if p2 exits.
 output = p2.communicate()[0]
 res = output.split('\n')[-2]
-print res
+print "code  :" + res
 a3 =  res.split(' ')[5]
 #print a3
 a3 = int(a3.strip())
