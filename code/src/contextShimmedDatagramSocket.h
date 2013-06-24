@@ -50,11 +50,12 @@ public:
         return shim->getSendPacket(payLoad);
     }
     pair<vector<unsigned char>, vector<unique_ptr<ContextSummary>>> receive()
-    {
-        if (bind(sock, (struct sockaddr*)&addr, sizeof(addr)) == -1)
-        {
-            perror("Bind error");
-        } 
+    {   
+        bind(sock, (struct sockaddr*)&addr, sizeof(addr));
+        // if (bind(sock, (struct sockaddr*)&addr, sizeof(addr)) == -1)
+        // {
+        //     perror("Bind error");
+        // } 
         
         // Send the message after the bind     
         //pinger("hello");
@@ -67,6 +68,9 @@ public:
                 
         if(close(sock) == -1)
             perror("close");
+            
+        // TODO - not implemented
+        return pair<vector<unsigned char>, vector<unique_ptr<ContextSummary>>>();
     }
     
     int send(const string& payLoad)

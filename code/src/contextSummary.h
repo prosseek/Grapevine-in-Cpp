@@ -31,8 +31,16 @@ public:
         this->timestamp = other.timestamp;
         this->db = other.db;
     }
+    
+    ContextSummary(int id) // , const std::map<std::string, int>& db = {}, int hops = 3, std::time_t timestamp = 0)
+    {
+        this->id = id;
+        this->db = {};
+        this->hops = 3;
+        this->timestamp = 0;
+    }
 
-    ContextSummary(int id, const std::map<std::string, int>& db = {}, int hops = 3, std::time_t timestamp = 0)
+    ContextSummary(int id, const std::map<std::string, int>& db, int hops = 3, std::time_t timestamp = 0)
     {
         this->id = id;
         this->db = db;
@@ -62,7 +70,7 @@ public:
     int setHops(int hops) {this->hops = hops; return hops;}
     
     int getId() const {return this->id;}
-    void setId() {this->id = id;}
+    void setId(int id) {this->id = id;}
     
     std::map<std::string, int> getDb() const {return this->db;}
     

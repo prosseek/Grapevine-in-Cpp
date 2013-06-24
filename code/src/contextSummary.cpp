@@ -12,6 +12,7 @@ ContextSummary& ContextSummary::operator=(const ContextSummary& other)
     //TODO
     // Now it just copies the pointer of the db, but it may be deepcopy ultimately
     this->db = other.db;
+    return *this;
 }
 
 std::vector<std::string> ContextSummary::keySet() const

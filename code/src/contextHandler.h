@@ -188,6 +188,8 @@ public:
     GroupDefinition* setupGroupDefinitionByMoving(GroupDefinition* groupDefinition)
     {
         setupGroupDefinitionByMoving(*groupDefinition);
+        //TOOD check correct return value
+        return groupDefinition;
     }
     
     void addGroupDefinition(int gId)
@@ -301,9 +303,8 @@ public:
                 auto existing = getReceivedSummary(uid);
                 auto summaryTimeStamp = summary->getTimestamp();
                 auto existingTimeStamp = existing->getTimestamp();
-                if ( summaryTimeStamp < existingTimeStamp \
-                   || (summaryTimeStamp == existingTimeStamp) \
-                       && summary->getHops() >= existing->getHops())
+                if ( ((summaryTimeStamp < existingTimeStamp) || (summaryTimeStamp == existingTimeStamp)) \
+                       && (summary->getHops() >= existing->getHops()))
                        continue;
                 // Is this OK? What would be the policy? Copy or reference copy? 
                 summariesToPut.push_back(unique_ptr<ContextSummary>(new ContextSummary(*summary)));
