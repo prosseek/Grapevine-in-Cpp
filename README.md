@@ -1,6 +1,9 @@
 grapevineCpp
 ============
 
+Implementation of [Grapevine](http://mpc.ece.utexas.edu/research/grapevine) idea in C++ langauge. Check the related paper [Grapevine: Efficient Situational Awareness in Pervasive Computing Environments](http://mpc.ece.utexas.edu/media/uploads/publishing/percom2012_grapevine_wip.pdf).
+
+
 ## How to build
 cd build
 cmake -DCMAKE_BUILD_TYPE:STRING=Debug ../code
